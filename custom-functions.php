@@ -11,7 +11,7 @@ Version: 10.0
 
 
 define( 'EDD_MENU_POSITION', 35 );
-define( 'EDD_SL_REDIRECT_UPDATES', true );
+//define( 'EDD_SL_REDIRECT_UPDATES', true );
 
 /* SearchWP Mods */
 
