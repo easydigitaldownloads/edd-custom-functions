@@ -177,13 +177,13 @@ function edd_gf_extensions_dropdown( $form ){
 
 		// For Normal Name input
 		$query = new WP_Query( array(
-			'post_type' => 'extension',
+			'post_type' => 'download',
 			'nopaging' => true,
 			'orderby' => 'post_title',
 			'order' => 'ASC',
 			'tax_query' => array(
 				array( 
-					'taxonomy' => 'extension_category',
+					'taxonomy' => 'download_category',
 					'field' => 'slug',
 					'terms' => '3rd-party',
 					'operator' => 'NOT IN'
