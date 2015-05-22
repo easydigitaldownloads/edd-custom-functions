@@ -213,7 +213,7 @@ add_filter('gform_pre_render_14', 'edd_gf_extensions_dropdown');
 
 function edd_gf_add_priority_to_subject( $args, $format ) {
 
-	$email = trim( str_replace( 'Reply-To:', '', $args['headers']['Reply-To'] );
+	$email = trim( str_replace( 'Reply-To:', '', $args['headers']['Reply-To'] ) );
 	$user  = get_user_by( 'email', $email );
 
 	if( $user && rcp_is_active( $user->ID ) ) {
