@@ -209,3 +209,4 @@ function edd_gf_extensions_dropdown( $form ){
 	
 }
 add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown');
+add_filter('gform_pre_render_14', 'edd_gf_extensions_dropdown');
