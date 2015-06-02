@@ -169,9 +169,11 @@ add_action( 'wp_footer', 'edd_ga_tracking_code' );
  * @param array @form Current Form Object
  * @return array @form Modified Form Object
  */
-function edd_gf_extensions_dropdown( $form, $ajax, $values ){
+function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
+
 	foreach( $form['fields'] as &$field ) {
-		if ( 'select' != $field['type'] || false === strpos( $field['cssClass'], 'extension-a' ) ) {
+		
+		if ( false === strpos( $field['cssClass'], 'extension-list' ) ) {
 			continue;
 		}
 
@@ -191,9 +193,8 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ){
 			)
 		) );
 
-		$field['choices'] = array();
-
 		if ( $downloads ) {
+			$field['choices'] = array();
 			foreach( $downloads as $d ) {
 		  		$field['choices'][] = array( 'text' => $d->post_title, 'value' => $d->ID );
 			}
@@ -202,7 +203,6 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ){
 		// Add Other Choice
 		$field['enableOtherChoice'] = 1;
 
-		break;
 	}
 	
 	return $form;
