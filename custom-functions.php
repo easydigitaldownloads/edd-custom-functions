@@ -171,7 +171,7 @@ add_action( 'wp_footer', 'edd_ga_tracking_code' );
  */
 function edd_gf_extensions_dropdown( $form ){
 	foreach( $form['fields'] as &$field ) {
-		if ( 'select' != $field['type'] || false === strpos( $field['cssClass'], 'extension-a' ) || ! rgar( $field, 'allowsPrepopulate' ) ) {
+		if ( 'select' != $field['type'] || false === strpos( $field['cssClass'], 'extension-a' ) ) {
 			continue;
 		}
 
