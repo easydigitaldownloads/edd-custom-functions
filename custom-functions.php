@@ -176,7 +176,7 @@ function edd_gf_extensions_dropdown( $form ){
 		}
 
 		// For Normal Name input
-		$query = new WP_Query( array(
+		$downloads = get_posts( array(
 			'post_type' => 'download',
 			'nopaging' => true,
 			'orderby' => 'post_title',
@@ -193,9 +193,9 @@ function edd_gf_extensions_dropdown( $form ){
 
 		$field['choices'] = array();
 
-		if ( $query->posts ) {
-			foreach( $query->posts as $post ) {
-		  		$field['choices'][] = array( 'text' => $post->post_title, 'value' => $post->ID );
+		if ( $downloads ) {
+			foreach( $downloads as $d ) {
+		  		$field['choices'][] = array( 'text' => $d->post_title, 'value' => $d->ID );
 			}
 		}
 
