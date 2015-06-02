@@ -211,16 +211,24 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
 add_filter('gform_pre_render_14', 'edd_gf_extensions_dropdown', 9999, 3 );
 
-function edd_gf_add_priority_to_subject( $args, $format ) {
 
-	$email = trim( str_replace( 'Reply-To:', '', $args['headers']['Reply-To'] ) );
+function edd_gf_add_priority_to_tags( $tags, $feed, $entry, $form ) {
+	if( ! empty( $tags ) ) {
+		if( empty( $tags[0] ) ) {
+			unset( $tags[0] ); // Fix for Untagged annoyance
+		}
+	}
+
+	$email_id = $feed['meta']['customer_email'];
+	$email    = $entry[ $email_id ];
+
 	$user  = get_user_by( 'email', $email );
 
 	if( $user && rcp_is_active( $user->ID ) ) {
-		$args['subject'] = 'Priority: ' . $args['subject'];
+		$tags[] = 'priority';
 	}
 
-	return $args;
+	return $tags;
 
 }
-add_filter( 'gform_pre_send_email', 'edd_gf_add_priority_to_subject', 10, 2 );
+add_filter( 'gform_helpscout_tags', 'edd_gf_add_priority_to_tags', 10, 4 );
