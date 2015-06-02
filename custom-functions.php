@@ -169,7 +169,7 @@ add_action( 'wp_footer', 'edd_ga_tracking_code' );
  * @param array @form Current Form Object
  * @return array @form Modified Form Object
  */
-function edd_gf_extensions_dropdown( $form ){
+function edd_gf_extensions_dropdown( $form, $ajax, $values ){
 	foreach( $form['fields'] as &$field ) {
 		if ( 'select' != $field['type'] || false === strpos( $field['cssClass'], 'extension-a' ) ) {
 			continue;
@@ -208,8 +208,8 @@ function edd_gf_extensions_dropdown( $form ){
 	return $form;
 	
 }
-add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown');
-add_filter('gform_pre_render_14', 'edd_gf_extensions_dropdown');
+add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
+add_filter('gform_pre_render_14', 'edd_gf_extensions_dropdown', 9999, 3 );
 
 function edd_gf_add_priority_to_subject( $args, $format ) {
 
