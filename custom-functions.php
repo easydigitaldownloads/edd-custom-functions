@@ -183,6 +183,14 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 			'nopaging' => true,
 			'orderby' => 'post_title',
 			'order' => 'ASC',
+			'tax_query' => array(
+				array( 
+					'taxonomy' => 'download_category',
+					'field' => 'slug',
+					'terms' => '3rd-party',
+					'operator' => 'NOT IN'
+				)
+			)
 		) );
 
 		if ( $downloads ) {
