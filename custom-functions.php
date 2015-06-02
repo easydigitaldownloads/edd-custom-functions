@@ -181,7 +181,7 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 		$downloads = get_posts( array(
 			'post_type' => 'download',
 			'nopaging' => true,
-			'orderby' => 'post_title',
+			'orderby' => 'title',
 			'order' => 'ASC',
 			'tax_query' => array(
 				array( 
