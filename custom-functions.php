@@ -196,7 +196,7 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 		if ( $downloads ) {
 			$field->choices = array();
 			foreach( $downloads as $d ) {
-		  		$field->choices[] = array( 'text' => $d->post_title, 'value' => $d->ID );
+		  		$field->choices[] = array( 'text' => $d->post_title, 'value' => $d->post_title );
 			}
 		}
 
