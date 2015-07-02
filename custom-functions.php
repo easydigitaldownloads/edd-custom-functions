@@ -235,4 +235,4 @@ function edd_redirect_docs() {
 	}
 
 }
-add_action( 'init', 'edd_redirect_docs' );
+add_action( 'template_redirect', 'edd_redirect_docs' );
