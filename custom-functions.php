@@ -199,6 +199,10 @@ function edd_snap_engage_code() {
 		return;
 	}
 
+	if( is_page( 'support' ) ) {
+		return;
+	}
+
 ?>
 <!-- begin SnapEngage code -->
 <script type="text/javascript">
