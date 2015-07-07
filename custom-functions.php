@@ -173,6 +173,11 @@ function eddwp_optimizely_revenue_tracking() {
 	if( ! function_exists( 'edd_get_purchase_session' ) ) {
 		return;
 	}
+
+	if( function_exists( 'edd_is_success_page' ) && ! edd_is_success_page() ) {
+		return;
+	}
+	
 	$session = edd_get_purchase_session();
 	if( ! $session ) {
 		return;
