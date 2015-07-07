@@ -161,6 +161,40 @@ function edd_ga_tracking_code() {
 }
 add_action( 'wp_footer', 'edd_ga_tracking_code' );
 
+function eddwp_optimizely_code() {
+
+	if( function_exists( 'edd_is_success_page' ) && ! edd_is_success_page() ) {
+		return;
+	}
+
+	if( function_exists( 'edd_get_purchase_session' ) && ! edd_get_purchase_session() ) {
+		return;
+	}
+?>
+	<script src="//cdn.optimizely.com/js/3142510426.js"></script>
+<?php
+}
+add_action( 'wp_head', 'eddwp_optimizely_code' );
+
+function eddwp_optimizely_revenue_tracking() {
+
+	if( ! function_exists( 'edd_get_purchase_session' ) ) {
+		return;
+	}
+	$session = edd_get_purchase_session();
+	if( ! $session ) {
+		return;
+	}
+	$payment_id = edd_get_purchase_id_by_key( $session['purchase_key'] );
+?>
+<script>
+	var price = <?php echo edd_get_payment_amount( $payment_id ); ?> 
+	window.optimizely = window.optimizely || [];
+	window.optimizely.push(['trackEvent', 'purchase_complete', {'revenue': price * 100}]);
+</script>
+<?php
+}
+add_action( 'wp_head', 'eddwp_optimizely_revenue_tracking', 11 );
 
 function edd_snap_engage_code() {
 ?>
