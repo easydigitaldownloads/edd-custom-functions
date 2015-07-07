@@ -162,14 +162,6 @@ function edd_ga_tracking_code() {
 add_action( 'wp_footer', 'edd_ga_tracking_code' );
 
 function eddwp_optimizely_code() {
-
-	if( function_exists( 'edd_is_success_page' ) && ! edd_is_success_page() ) {
-		return;
-	}
-
-	if( function_exists( 'edd_get_purchase_session' ) && ! edd_get_purchase_session() ) {
-		return;
-	}
 ?>
 	<script src="//cdn.optimizely.com/js/3142510426.js"></script>
 <?php
