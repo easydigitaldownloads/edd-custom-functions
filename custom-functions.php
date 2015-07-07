@@ -177,7 +177,7 @@ function eddwp_optimizely_revenue_tracking() {
 	if( function_exists( 'edd_is_success_page' ) && ! edd_is_success_page() ) {
 		return;
 	}
-	
+
 	$session = edd_get_purchase_session();
 	if( ! $session ) {
 		return;
@@ -194,6 +194,11 @@ function eddwp_optimizely_revenue_tracking() {
 add_action( 'wp_head', 'eddwp_optimizely_revenue_tracking', 11 );
 
 function edd_snap_engage_code() {
+
+	if( function_exists( 'is_bbpress' ) && is_bbpress() ) {
+		return;
+	}
+
 ?>
 <!-- begin SnapEngage code -->
 <script type="text/javascript">
