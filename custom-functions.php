@@ -290,7 +290,7 @@ function edd_gf_add_priority_to_tags( $tags, $feed, $entry, $form ) {
 	return $tags;
 
 }
-//add_filter( 'gform_helpscout_tags', 'edd_gf_add_priority_to_tags', 10, 4 );
+add_filter( 'gform_helpscout_tags', 'edd_gf_add_priority_to_tags', 10, 4 );
 
 function edd_redirect_docs() {
 
