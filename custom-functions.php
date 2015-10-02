@@ -268,3 +268,6 @@ function edd_redirect_docs() {
 
 }
 add_action( 'template_redirect', 'edd_redirect_docs' );
+
+// Allow all usernames
+add_filter( 'edd_validate_username', '__return_true' );
