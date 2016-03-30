@@ -264,31 +264,44 @@ function eddwp_post_grid( $atts ) {
 	shortcode_atts( $default, $atts );
 	$post__in = explode( ',', $atts['include'] );
 	$args = array(
-		'orderby'   => $atts['orderby'],
-		'order'     => $atts['order'],
-		'post__in'  => $post__in,
-		'post_type' => 'any'
+		'orderby'        => $atts['orderby'],
+		'order'          => $atts['order'],
+		'post__in'       => $post__in,
+		'post_type'      => 'any',
+		'posts_per_page' => -1,
 	);
 	$query = new WP_Query( $args );
 	ob_start();
-	?>
 
-	<?php if ( $query->have_posts() ) : ?>
-		<div class="post-grid">
-			<?php $counter = 0; while ( $query->have_posts() ) { $query->the_post(); $counter++; ?>
-			<div class="grid-item column <?php if( $counter%3 == 0 ) echo ' last'; ?>">
-				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-					<?php the_post_thumbnail(); ?>
-					<h2 class="entry-title"><a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a></h2>
-					<?php echo get_post_meta( get_the_ID(), 'ecpt_shortdescription', true ); ?>
-				</article><!-- /#post-<?php the_ID(); ?> -->
-			</div><!-- /.grid-item (end) -->
-			<?php } // end while ?>
-		</div><!-- /.post-grid -->
-	<?php endif; ?>
+	if ( $query->have_posts() ) :
+		?>
+		<div class="download-grid two-col narrow-grid download-grid-shortcode">
+		<?php
+			while ( $query->have_posts() ) : $query->the_post();
+				?>
+					<div class="download-grid-item">
+						<?php if ( has_post_thumbnail() ) : ?>
+							<div class="download-grid-thumb-wrap">
+								<a href="<?php the_permalink(); ?>">
+									<?php echo get_the_post_thumbnail( get_the_ID(), 'download-grid-thumb', array( 'class' => 'download-grid-thumb' ) ); ?>
+								</a>
+							</div>
+						<?php endif; ?>
+						<div class="download-grid-item-info">
+							<h4 class="download-grid-title">
+								<?php the_title( sprintf( '<h4 class="download-grid-title"><a href="%s">', esc_url( get_permalink() ) ), '</a></h4>' ); ?>
+							</h4>
+							<?php echo get_post_meta( get_the_ID(), 'ecpt_shortdescription', true ); ?>
+						</div>
+					</div>
+				<?php
+			endwhile;
+		?>
+		</div>
+		<?php
+		wp_reset_postdata();
+	endif;
 
-	<?php
-	wp_reset_postdata();
 	return ob_get_clean();
 }
 add_shortcode( 'post_grid', 'eddwp_post_grid' );
@@ -298,7 +311,7 @@ add_shortcode( 'post_grid', 'eddwp_post_grid' );
  * Divider
  */
 function eddwp_shortcode_divider( $atts, $content = null ) {
-	return '';
+	return '<hr class="divider-shortcode">';
 }
 add_shortcode( 'divider', 'eddwp_shortcode_divider' );
 
@@ -313,7 +326,7 @@ add_shortcode( 'clear', 'eddwp_shortcode_clear' );
 
 
 /**
- * Extensions shortcode callback function
+ * DELETION CANDIDATE - 30 March 2016 - start watching for usage
  */
 function eddwp_extensions_cb() {
 	echo '<div class="extensions clearfix">';
