@@ -25,38 +25,6 @@ function pw_edd_searchwp_indexed_types( $types ) {
 }
 add_filter( 'searchwp_indexed_post_types', 'pw_edd_searchwp_indexed_types' );
 
-/*********************************************
-* Connection types
-*********************************************/
-
-
-function eddwp_connection_types() {
-	p2p_register_connection_type( array(
-		'name' => 'extensions_to_docs',
-		'from' => 'extension',
-		'to' => 'docs',
-		'reciprocal' => true
-	) );
-	p2p_register_connection_type( array(
-		'name' => 'docs_to_docs',
-		'from' => 'docs',
-		'to' => 'docs',
-		'reciprocal' => true
-	) );
-	p2p_register_connection_type( array(
-		'name' => 'videos_to_docs',
-		'from' => 'videos',
-		'to' => 'docs',
-		'reciprocal' => true
-	) );
-	p2p_register_connection_type( array(
-		'name' => 'extensions_to_forums',
-		'from' => 'extension',
-		'to' => 'forum',
-		'reciprocal' => true
-	) );
-}
-add_action( 'p2p_init', 'eddwp_connection_types' );
 
 
 function eddwp_extenstion_cats_shortcode() {
@@ -185,7 +153,7 @@ function eddwp_optimizely_revenue_tracking() {
 	$payment_id = edd_get_purchase_id_by_key( $session['purchase_key'] );
 ?>
 <script>
-	var price = <?php echo edd_get_payment_amount( $payment_id ); ?> 
+	var price = <?php echo edd_get_payment_amount( $payment_id ); ?>
 	window.optimizely = window.optimizely || [];
 	window.optimizely.push(['trackEvent', 'purchase_complete', {'revenue': price * 100}]);
 </script>
@@ -204,7 +172,7 @@ add_action( 'wp_head', 'eddwp_optimizely_revenue_tracking', 11 );
 function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 
 	foreach( $form['fields'] as &$field ) {
-		
+
 		if ( false === strpos( $field->cssClass, 'extension-list' ) ) {
 			continue;
 		}
@@ -216,7 +184,7 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 			'orderby' => 'title',
 			'order' => 'ASC',
 			'tax_query' => array(
-				array( 
+				array(
 					'taxonomy' => 'download_category',
 					'field' => 'slug',
 					'terms' => '3rd-party',
@@ -236,9 +204,9 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 		$field->enableOtherChoice = 1;
 
 	}
-	
+
 	return $form;
-	
+
 }
 add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
 add_filter('gform_pre_render_14', 'edd_gf_extensions_dropdown', 9999, 3 );
