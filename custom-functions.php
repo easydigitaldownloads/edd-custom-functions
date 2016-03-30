@@ -239,3 +239,110 @@ add_action( 'template_redirect', 'edd_redirect_docs' );
 
 // Allow all usernames
 add_filter( 'edd_validate_username', '__return_true' );
+
+/**
+ * Post Grid
+ */
+function eddwp_post_grid( $atts ) {
+	$default = array(
+		'categories'    => '',
+		'cat'           => '',
+		'category_name' => '',
+		'tag'           => '',
+		'columns' 		=> 3,
+		'rows' 			=> 3,
+		'orderby' 		=> 'date',
+		'order' 		=> 'DESC',
+		'offset' 		=> 0,
+		'query' 		=> '',
+		'crop'			=> '',
+		'link' 			=> 0,
+		'link_text' 	=> 'View All Posts',
+		'link_url' 		=> 'http://google.com',
+		'link_target' 	=> '_self'
+	);
+	shortcode_atts( $default, $atts );
+	$post__in = explode( ',', $atts['include'] );
+	$args = array(
+		'orderby'   => $atts['orderby'],
+		'order'     => $atts['order'],
+		'post__in'  => $post__in,
+		'post_type' => 'any'
+	);
+	$query = new WP_Query( $args );
+	ob_start();
+	?>
+
+	<?php if ( $query->have_posts() ) : ?>
+		<div class="post-grid">
+			<?php $counter = 0; while ( $query->have_posts() ) { $query->the_post(); $counter++; ?>
+			<div class="grid-item column <?php if( $counter%3 == 0 ) echo ' last'; ?>">
+				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+					<?php the_post_thumbnail(); ?>
+					<h2 class="entry-title"><a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a></h2>
+					<?php echo get_post_meta( get_the_ID(), 'ecpt_shortdescription', true ); ?>
+				</article><!-- /#post-<?php the_ID(); ?> -->
+			</div><!-- /.grid-item (end) -->
+			<?php } // end while ?>
+		</div><!-- /.post-grid -->
+	<?php endif; ?>
+
+	<?php
+	wp_reset_postdata();
+	return ob_get_clean();
+}
+add_shortcode( 'post_grid', 'eddwp_post_grid' );
+
+
+/**
+ * Divider
+ */
+function eddwp_shortcode_divider( $atts, $content = null ) {
+	return '';
+}
+add_shortcode( 'divider', 'eddwp_shortcode_divider' );
+
+
+/**
+ * Clear Row
+ */
+function eddwp_shortcode_clear() {
+	return '<div class="clear"></div>';
+}
+add_shortcode( 'clear', 'eddwp_shortcode_clear' );
+
+
+/**
+ * Extensions shortcode callback function
+ */
+function eddwp_extensions_cb() {
+	echo '<div class="extensions clearfix">';
+	$extensions = new WP_Query(
+		array(
+			'post_type' => 'download',
+			'nopaging'  => true,
+			'orderby'   => 'rand'
+		)
+	);
+	while ( $extensions ->have_posts() ) : $extensions->the_post(); ?>
+
+		<div class="extension">
+			<?php
+			if ( has_category( '3rd Party' ) )
+				echo '<i class="icon-third-party"></i>';
+			elseif ( has_category( 'Free' ) )
+				echo '<i class="icon-free"></i>';
+			?>
+
+			<a href="<?php the_permalink(); ?>" title="<?php get_the_title(); ?>">
+				<?php the_post_thumbnail( 'showcase' ); ?>
+				<h2><?php the_title(); ?></h2>
+				<?php the_excerpt(); ?>
+			</a>
+		</div>
+
+	<?php endwhile; ?>
+
+	<?php echo '</div>';
+}
+add_shortcode( 'extensions', 'eddwp_extensions_cb' );
