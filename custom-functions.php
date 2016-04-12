@@ -13,6 +13,8 @@ Version: 10.0
 define( 'EDD_MENU_POSITION', 35 );
 //define( 'EDD_SL_REDIRECT_UPDATES', true );
 
+add_filter( 'edd_api_log_requests', '__return_false' );
+
 /* SearchWP Mods */
 
 add_filter( 'searchwp_background_deltas', '__return_false' );
