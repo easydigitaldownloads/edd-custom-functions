@@ -90,8 +90,8 @@ add_filter( 'upload_mimes', 'eddwp_allowed_mime_types' );
 remove_action( 'plugins_loaded', array( 'EDD_Heartbeat', 'init' ) );
 
 function pw_flush() {
-  if( isset( $_GET['flush'] ) && isset( $_GET['pw11'] ) )
-    flush_rewrite_rules(false);
+	if( isset( $_GET['flush'] ) && isset( $_GET['pw11'] ) )
+		flush_rewrite_rules(false);
 }
 add_action( 'init', 'pw_flush' );
 
@@ -129,7 +129,7 @@ function edd_ga_tracking_code() {
 </script>
 <?php
 }
-add_action( 'wp_footer', 'edd_ga_tracking_code' );
+add_action( 'wp_head', 'edd_ga_tracking_code', 99999 );
 
 function eddwp_optimizely_code() {
 ?>
