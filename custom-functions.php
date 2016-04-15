@@ -15,6 +15,21 @@ define( 'EDD_MENU_POSITION', 35 );
 
 add_filter( 'edd_api_log_requests', '__return_false' );
 
+/**
+ * If the page loaded is the homepage, we don't need to start a session if one doesn't exist
+ *
+ * @param  bool $start_session
+ * @return bool
+ */
+function eddwp_maybe_start_session( $start_session ) {
+	if ( is_home() ) {
+		$start_session = false;
+	}
+
+	return $start_session;
+}
+add_filter( 'edd_start_session', 'eddwp_maybe_start_session', 10, 1 );
+
 /* SearchWP Mods */
 
 add_filter( 'searchwp_background_deltas', '__return_false' );
