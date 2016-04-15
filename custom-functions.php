@@ -22,7 +22,7 @@ add_filter( 'edd_api_log_requests', '__return_false' );
  * @return bool
  */
 function eddwp_maybe_start_session( $start_session ) {
-	if ( is_home() ) {
+	if ( '/' == $_SERVER['REQUEST_URI'] ) {
 		$start_session = false;
 	}
 
@@ -31,7 +31,6 @@ function eddwp_maybe_start_session( $start_session ) {
 add_filter( 'edd_start_session', 'eddwp_maybe_start_session', 10, 1 );
 
 /* SearchWP Mods */
-
 add_filter( 'searchwp_background_deltas', '__return_false' );
 add_filter( 'searchwp_missing_integration_notices', '__return_false' );
 
