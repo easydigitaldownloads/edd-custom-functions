@@ -169,7 +169,7 @@ function eddwp_optimizely_revenue_tracking() {
 	$payment_id = edd_get_purchase_id_by_key( $session['purchase_key'] );
 ?>
 <script>
-	var price = <?php echo edd_get_payment_amount( $payment_id ); ?>
+	var price = <?php echo edd_get_payment_amount( $payment_id ); ?>;
 	window.optimizely = window.optimizely || [];
 	window.optimizely.push(['trackEvent', 'purchase_complete', {'revenue': price * 100}]);
 </script>
