@@ -103,12 +103,6 @@ add_filter( 'upload_mimes', 'eddwp_allowed_mime_types' );
 // Disable heartbeat in dashboard
 remove_action( 'plugins_loaded', array( 'EDD_Heartbeat', 'init' ) );
 
-function pw_flush() {
-	if( isset( $_GET['flush'] ) && isset( $_GET['pw11'] ) )
-		flush_rewrite_rules(false);
-}
-add_action( 'init', 'pw_flush' );
-
 function pw_edd_empty_cart_message( $text ) {
 	return '<p class="edd_empty_cart">' . __( 'Your cart is empty. If this appears to be in error, please clear your browser cookies and try again.', 'edd' ) . '</p>';
 }
