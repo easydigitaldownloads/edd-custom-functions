@@ -12,6 +12,7 @@ Version: 10.0
 
 define( 'EDD_MENU_POSITION', 35 );
 //define( 'EDD_SL_REDIRECT_UPDATES', true );
+define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 
 add_filter( 'edd_api_log_requests', '__return_false' );
 
@@ -369,3 +370,8 @@ function eddwp_extensions_cb() {
 	<?php echo '</div>';
 }
 add_shortcode( 'extensions', 'eddwp_extensions_cb' );
+
+/**
+ * Include additional site functions
+ */
+include( EDD_CUSTOM_FUNCTIONS . 'taxonomies.php' );
