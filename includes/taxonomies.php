@@ -33,7 +33,7 @@ function eddwp_setup_gateway_taxonomies() {
 			'labels'       => $feature_labels,
 			'show_ui'      => true,
 			'query_var'    => $features_slug,
-			'rewrite'      => array( 'slug' => $features_slug, 'with_front' => false, 'hierarchical' => true  ),
+			'rewrite'      => array( 'slug' => 'gateway-features', 'with_front' => false, 'hierarchical' => true  ),
 			'capabilities' => array( 'manage_terms' => 'manage_product_terms','edit_terms' => 'edit_product_terms','assign_terms' => 'assign_product_terms','delete_terms' => 'delete_product_terms' )
 	);
 	register_taxonomy( 'gateway_features', array( 'download' ), $feature_args );
@@ -62,7 +62,7 @@ function eddwp_setup_gateway_taxonomies() {
 		'labels'       => $currency_labels,
 		'show_ui'      => true,
 		'query_var'    => $currencies_slug,
-		'rewrite'      => array( 'slug' => $currencies_slug, 'with_front' => false, 'hierarchical' => true  ),
+		'rewrite'      => array( 'slug' => 'gateway-currencies', 'with_front' => false, 'hierarchical' => true  ),
 		'capabilities' => array( 'manage_terms' => 'manage_product_terms','edit_terms' => 'edit_product_terms','assign_terms' => 'assign_product_terms','delete_terms' => 'delete_product_terms' )
 	);
 	register_taxonomy( 'gateway_currencies', array( 'download' ), $currency_args );
@@ -91,7 +91,7 @@ function eddwp_setup_gateway_taxonomies() {
 		'labels'       => $country_labels,
 		'show_ui'      => true,
 		'query_var'    => $countries_slug,
-		'rewrite'      => array( 'slug' => $countries_slug, 'with_front' => false, 'hierarchical' => true  ),
+		'rewrite'      => array( 'slug' => 'gateway-countries', 'with_front' => false, 'hierarchical' => true  ),
 		'capabilities' => array( 'manage_terms' => 'manage_product_terms','edit_terms' => 'edit_product_terms','assign_terms' => 'assign_product_terms','delete_terms' => 'delete_product_terms' )
 	);
 	register_taxonomy( 'gateway_countries', array( 'download' ), $country_args );
