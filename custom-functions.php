@@ -33,7 +33,7 @@ function eddwp_maybe_start_session( $start_session ) {
 	}
 
 	if( empty( $_REQUEST['edd_action'] ) && false === strpos( $_SERVER['REQUEST_URI'], '/downloads' ) ) {
-		$start_session = false;
+	//	$start_session = false;
 	}
 
 	$to_skip = array(
