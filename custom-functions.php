@@ -17,14 +17,26 @@ define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 add_filter( 'edd_api_log_requests', '__return_false' );
 
 /**
- * If the page loaded is the homepage, we don't need to start a session if one doesn't exist
+ * If the page loaded is the homepage, we don't need to start a session if one doesn't exist. Also skips archives and non-checkout pages
  *
  * @param  bool $start_session
  * @return bool
  */
 function eddwp_maybe_start_session( $start_session ) {
-	if ( '/' == $_SERVER['REQUEST_URI'] ) {
-		$start_session = false;
+
+	if( empty( $_GET['edd_action'] ) ) {
+
+		if ( '/' == $_SERVER['REQUEST_URI'] ) {
+			$start_session = false;
+		}
+
+		if( is_archive() ) {
+			$start_session = false;
+		}
+
+		if( is_page() && ! is_page( 'checkout' ) ) {
+			$start_session = false;
+		}
 	}
 
 	return $start_session;
