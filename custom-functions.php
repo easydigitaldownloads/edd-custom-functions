@@ -16,27 +16,36 @@ define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 
 add_filter( 'edd_api_log_requests', '__return_false' );
 
-/**
- * If the page loaded is the homepage, we don't need to start a session if one doesn't exist. Also skips archives and non-checkout pages
+/*
+ * If the page loaded is the homepage, we don't need to start a session if one doesn't exist
  *
  * @param  bool $start_session
  * @return bool
  */
 function eddwp_maybe_start_session( $start_session ) {
 
-	if( empty( $_GET['edd_action'] ) ) {
+	if ( '/' == $_SERVER['REQUEST_URI'] ) {
+		$start_session = false;
+	}
 
-		if ( '/' == $_SERVER['REQUEST_URI'] ) {
-			$start_session = false;
-		}
+	if( false !== strpos( $_SERVER['REQUEST_URI'], '/downloads' ) && '/downloads/' === trailingslashit( $_SERVER['REQUEST_URI'] ) ) {
+		$start_session = false;
+	}
 
-		if( is_archive() ) {
-			$start_session = false;
-		}
+	if( empty( $_REQUEST['edd_action'] ) && false === strpos( $_SERVER['REQUEST_URI'], '/downloads' ) ) {
+		$start_session = false;
+	}
 
-		if( is_page() && ! is_page( 'checkout' ) ) {
-			$start_session = false;
-		}
+	$to_skip = array(
+		'activate_license',
+		'deactivate_license',
+		'check_license',
+		'checkin',
+		'get_version'
+	);
+
+	if( ! empty( $_REQUEST['edd_action'] ) && in_array( $_REQUEST['edd_action'], $to_skip ) ) {
+		$start_session = false;
 	}
 
 	return $start_session;
