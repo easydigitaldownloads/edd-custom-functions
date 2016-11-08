@@ -161,6 +161,7 @@ function edd_ga_tracking_code() {
 }
 add_action( 'wp_head', 'edd_ga_tracking_code', 99999 );
 
+/*
 function eddwp_optimizely_code() {
 ?>
 	<script src="//cdn.optimizely.com/js/3142510426.js"></script>
@@ -192,7 +193,7 @@ function eddwp_optimizely_revenue_tracking() {
 <?php
 }
 add_action( 'wp_head', 'eddwp_optimizely_revenue_tracking', 11 );
-
+*/
 
 /**
  * Pre-populates radios based on previous name field
