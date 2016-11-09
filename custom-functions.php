@@ -145,22 +145,6 @@ function edd_rcp_force_auto_renew( $data ) {
 }
 add_filter( 'rcp_subscription_data', 'edd_rcp_force_auto_renew' );
 
-function edd_ga_tracking_code() {
-?>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-30170438-1', 'auto');
-  ga('send', 'pageview');
-
-</script>
-<?php
-}
-add_action( 'wp_head', 'edd_ga_tracking_code', 99999 );
-
 /*
 function eddwp_optimizely_code() {
 ?>
