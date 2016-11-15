@@ -204,7 +204,7 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 				array(
 					'taxonomy' => 'download_category',
 					'field' => 'slug',
-					'terms' => '3rd-party',
+					'terms' => array( '3rd-party', 'bundles' ),
 					'operator' => 'NOT IN'
 				)
 			)
