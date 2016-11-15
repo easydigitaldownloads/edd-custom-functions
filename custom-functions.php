@@ -226,7 +226,7 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 
 }
 add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
-add_filter('gform_pre_render_14', 'edd_gf_extensions_dropdown', 9999, 3 );
+add_filter('gform_pre_render_16', 'edd_gf_extensions_dropdown', 9999, 3 );
 
 
 function edd_gf_add_priority_to_tags( $tags, $feed, $entry, $form ) {
