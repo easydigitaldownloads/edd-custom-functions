@@ -377,6 +377,22 @@ function eddwp_extensions_cb() {
 }
 add_shortcode( 'extensions', 'eddwp_extensions_cb' );
 
+// Auto apply BFCM discount
+function pw_edd_auto_apply_discount() {
+
+	if( function_exists( 'edd_is_checkout' ) && edd_is_checkout() ) {
+
+		if( ! edd_cart_has_discounts() && edd_is_discount_valid( 'BFCM2016' ) ) {
+
+			edd_set_cart_discount( 'BFCM2016' );
+
+		}
+
+	}
+
+}
+add_action( 'template_redirect', 'pw_edd_auto_apply_discount' );
+
 /**
  * Include additional site functions
  */
