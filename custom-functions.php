@@ -382,9 +382,13 @@ add_shortcode( 'extensions', 'eddwp_extensions_cb' );
  * Auto apply BFCM discount
  */
 function pw_edd_auto_apply_discount() {
-	if( ! edd_is_discount_active( '949394' ) ) {
+
+	$bfcm_discount = edd_get_discount_id_by_code( 'BFCM2016' );
+
+	if( ! edd_is_discount_active( $bfcm_discount ) ) {
 		return;
 	}
+
 	if( function_exists( 'edd_is_checkout' ) && edd_is_checkout() ) {
 		if( ! edd_cart_has_discounts() && edd_is_discount_valid( 'BFCM2016' ) ) {
 			edd_set_cart_discount( 'BFCM2016' );
