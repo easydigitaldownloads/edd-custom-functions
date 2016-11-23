@@ -385,7 +385,7 @@ function pw_edd_auto_apply_discount() {
 
 	$bfcm_discount = edd_get_discount_id_by_code( 'BFCM2016' );
 
-	if( ! edd_is_discount_active( $bfcm_discount ) ) {
+	if( ! edd_is_discount_started( $bfcm_discount ) ) {
 		return;
 	}
 
