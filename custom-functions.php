@@ -383,14 +383,9 @@ add_shortcode( 'extensions', 'eddwp_extensions_cb' );
  */
 function pw_edd_auto_apply_discount() {
 
-	$bfcm_discount = edd_get_discount_id_by_code( 'BFCM2016' );
-
-	if( ! edd_is_discount_started( $bfcm_discount ) ) {
-		return;
-	}
-
 	if( function_exists( 'edd_is_checkout' ) && edd_is_checkout() ) {
-		if( ! edd_cart_has_discounts() && edd_is_discount_valid( 'BFCM2016' ) ) {
+
+		if( ! edd_cart_has_discounts() && edd_is_discount_valid( 'BFCM2016', '', false ) ) {
 			edd_set_cart_discount( 'BFCM2016' );
 		}
 	}
