@@ -390,7 +390,7 @@ function pw_edd_auto_apply_discount() {
 		}
 	}
 }
-add_action( 'template_redirect', 'pw_edd_auto_apply_discount' );
+//add_action( 'template_redirect', 'pw_edd_auto_apply_discount' );
 
 /**
  * Include additional site functions
