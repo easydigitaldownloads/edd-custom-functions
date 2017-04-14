@@ -48,6 +48,11 @@ function eddwp_maybe_start_session( $start_session ) {
 		$start_session = false;
 	}
 
+	// Finally, if there is a discount in the GET parameters, we should always start a session, so it applies correctly.
+	if ( ! empty( $_GET['discount'] ) ) {
+		$start_session = true;
+	}
+
 	return $start_session;
 }
 add_filter( 'edd_start_session', 'eddwp_maybe_start_session', 10, 1 );
