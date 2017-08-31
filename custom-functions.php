@@ -21,7 +21,7 @@ add_filter( 'edd_api_log_requests', '__return_false' );
  */
 function eddwp_edd_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 	$license = get_post( $license_id );
-	if( strtotime( $license->post_date ) < strtotime( 'September 1, 2017' ) ) {
+	if( strtotime( $license->post_date ) < strtotime( 'September 9, 2017' ) ) {
 		$renewal_discount = 30;
 	}
 	return $renewal_discount;
