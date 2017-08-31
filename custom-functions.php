@@ -17,6 +17,18 @@ define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 add_filter( 'edd_api_log_requests', '__return_false' );
 
 /*
+ * Sets renewal discount to 30% for any customer that purchased before September 1, 2017
+ */
+function eddwp_edd_grandfather_renewal_discount( $renewal_discount, $license_id ) {
+	$license = get_post( $license_id );
+	if( strtotime( $license->post_date ) < strtotime( 'September 1, 2017' ) ) {
+		$renewal_discount = 30;
+	}
+	return $renewal_discount;
+}
+add_filter( 'edd_sl_renewal_discount_percentage', 'eddwp_edd_grandfather_renewal_discount', 10, 2 );
+
+/*
  * If the page loaded is the homepage, we don't need to start a session if one doesn't exist
  *
  * @param  bool $start_session
