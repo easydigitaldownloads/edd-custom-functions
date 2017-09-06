@@ -17,6 +17,25 @@ define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 add_filter( 'edd_api_log_requests', '__return_false' );
 
 /*
+ * Disables renewal notifications for specific products
+ */
+function eddwp_maybe_disable_renewal_notice( $send, $license_id, $notice_id ) {
+	
+	$product_id = get_post_meta( $license_id, '_edd_sl_download_id', true );
+
+	switch( $product_id ) {
+
+		case 96640 : 
+			// Sales Recovery
+			$send = false;
+			break;
+	}
+
+	return $send;
+}
+add_filter( 'edd_sl_send_renewal_reminder', 'eddwp_maybe_disable_renewal_notice', 10, 3 );
+
+/*
  * Sets renewal discount to 30% for any customer that purchased before September 1, 2017
  */
 function eddwp_edd_grandfather_renewal_discount( $renewal_discount, $license_id ) {
