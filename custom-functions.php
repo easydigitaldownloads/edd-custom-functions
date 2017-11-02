@@ -14,6 +14,10 @@ define( 'EDD_MENU_POSITION', 35 );
 //define( 'EDD_SL_REDIRECT_UPDATES', true );
 define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 
+// Enable CC option in GF Help Scout add-on
+add_filter( 'gform_helpscout_enable_cc', '__return_true' );
+
+// Disable API request logging
 add_filter( 'edd_api_log_requests', '__return_false' );
 
 /*
