@@ -24,12 +24,12 @@ add_filter( 'edd_api_log_requests', '__return_false' );
  * Disables renewal notifications for specific products
  */
 function eddwp_maybe_disable_renewal_notice( $send, $license_id, $notice_id ) {
-	
+
 	$product_id = get_post_meta( $license_id, '_edd_sl_download_id', true );
 
 	switch( $product_id ) {
 
-		case 96640 : 
+		case 96640 :
 			// Sales Recovery
 			$send = false;
 			break;
@@ -528,12 +528,15 @@ function eddcf_renewal_license_warning( $item ) {
 
 	}
 
+	$period = EDD_Recurring()->get_pretty_subscription_frequency( $item['options']['recurring']['period'] );
+	$price  = edd_get_download_price( $item['id'] );
+
 	if ( ! empty( $sub ) ) {
 		?>
 		<tr class="renew-existing-sub-warning edd-alert edd-alert-warn">
 			<td colspan="3">
 				<p>
-					The above license for <em><?php echo edd_get_cart_item_name( $item ); ?></em> is associated with an existing subscription. By manually renewing it, your existing subscription will be canceled and a new one created. Doing this may opt you out of any existing pricing or subscription terms.
+					The above license for <em><?php echo edd_get_cart_item_name( $item ); ?></em> is associated with an existing subscription, which renews <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $sub->recurring_amount ) ); ?></strong>. By manually renewing, your existing subscription will be canceled and the new one will renew <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $price ) ); ?></strong>. Doing this may also opt you out of any existing subscription terms.
 				</p>
 			</td>
 		</tr>
