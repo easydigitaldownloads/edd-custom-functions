@@ -44,7 +44,7 @@ add_filter( 'edd_sl_send_renewal_reminder', 'eddwp_maybe_disable_renewal_notice'
  */
 function eddwp_edd_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 	$license = get_post( $license_id );
-	if( strtotime( $license->post_date ) < strtotime( 'September 9, 2017' ) ) {
+	if( is_a( $license, 'WP_Post' ) && strtotime( $license->post_date ) < strtotime( 'September 9, 2017' ) ) {
 		$renewal_discount = 30;
 	}
 	return $renewal_discount;
