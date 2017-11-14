@@ -536,7 +536,7 @@ function eddcf_renewal_license_warning( $item ) {
 		<tr class="renew-existing-sub-warning edd-alert edd-alert-warn">
 			<td colspan="3">
 				<p>
-					The above license for <em><?php echo edd_get_cart_item_name( $item ); ?></em> is associated with an existing subscription, which renews <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $sub->recurring_amount ) ); ?></strong>. By manually renewing, your existing subscription will be canceled and the new one will renew <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $price ) ); ?></strong>. Doing this may also opt you out of any existing subscription terms.
+					The above license for <strong><?php echo edd_get_cart_item_name( $item ); ?></strong> is associated with an existing subscription, which renews <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $sub->recurring_amount ) ); ?></strong>. By manually renewing, your existing subscription will be canceled and the new one will renew <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $price ) ); ?></strong>. Doing this may also opt you out of any existing subscription terms.
 				</p>
 			</td>
 		</tr>
