@@ -15,7 +15,7 @@ define( 'EDD_MENU_POSITION', 35 );
 define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 
 // Enable CC option in GF Help Scout add-on
-add_filter( 'gform_helpscout_enable_cc', '__return_true' );
+// add_filter( 'gform_helpscout_enable_cc', '__return_true' );
 
 // Disable API request logging
 add_filter( 'edd_api_log_requests', '__return_false' );
@@ -24,12 +24,12 @@ add_filter( 'edd_api_log_requests', '__return_false' );
  * Disables renewal notifications for specific products
  */
 function eddwp_maybe_disable_renewal_notice( $send, $license_id, $notice_id ) {
-	
+
 	$product_id = get_post_meta( $license_id, '_edd_sl_download_id', true );
 
 	switch( $product_id ) {
 
-		case 96640 : 
+		case 96640 :
 			// Sales Recovery
 			$send = false;
 			break;
