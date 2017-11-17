@@ -36,7 +36,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 	
 	}
 
-	if( ! is_user_logged_in() || $bundle_id === (int) $download_id ) {
+	if( ! is_user_logged_in() || is_admin() ) {
 		return $paths;
 	}
 
@@ -80,7 +80,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 				continue; // Only count new purchases
 			}
 
-			$discount += $item['price']; // Add the purchase price to the discount
+			$discount += ( $item['price'] - $item['tax'] ); // Add the purchase price to the discount
 
 		}
 
@@ -92,13 +92,14 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	$paths[] = array(
 		'download_id' => $bundle_id,
+		'price_id'    => false,
 		'discount'    => $discount,
 		'pro_rated'   => false
 	);
 
 	return $paths;
 }
-add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_all_access_upgrade_path', 10, 2 );
+add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_custom_upgrade_paths', 10, 2 );
 
 /*
  * Disables renewal notifications for specific products
