@@ -99,7 +99,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	return $paths;
 }
-add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_custom_upgrade_paths', 10, 2 );
+add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_all_access_upgrade_path', 10, 2 );
 
 /*
  * Disables renewal notifications for specific products
