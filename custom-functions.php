@@ -76,10 +76,6 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 				continue; // Skip free items and 100% discounted items
 			}
 
-			if( ! empty( $item['item_number']['options']['is_renewal'] ) ) {
-				continue; // Only count new purchases
-			}
-
 			$discount += ( $item['price'] - $item['tax'] ); // Add the purchase price to the discount
 
 		}
