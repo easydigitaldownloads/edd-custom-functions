@@ -15,10 +15,87 @@ define( 'EDD_MENU_POSITION', 35 );
 define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 
 // Enable CC option in GF Help Scout add-on
-// add_filter( 'gform_helpscout_enable_cc', '__return_true' );
+//add_filter( 'gform_helpscout_enable_cc', '__return_false' );
 
 // Disable API request logging
 add_filter( 'edd_api_log_requests', '__return_false' );
+
+/*
+ * Registers the upgrade path for All Access pass
+ */
+function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
+
+	if( false !== strpos( home_url(), 'staging' ) ) {
+
+		$bundle_id = 1046254; // ID of the all access pass on staging
+
+	} else {
+
+		// TODO: set to real ID
+		$bundle_id = 1150319; // ID of the all access pass on live
+	
+	}
+
+	if( ! is_user_logged_in() || is_admin() ) {
+		return $paths;
+	}
+
+	$discount  = 0.00;
+	$customer  = new EDD_Customer( get_current_user_id(), true );
+
+	if( ! $customer->purchase_value > 0 ) {
+		return $paths;
+	}
+
+	$now = current_time( 'timestamp' );
+
+	foreach( $customer->get_payments( 'publish' ) as $payment ) {
+
+		if( ! $payment->total > 0 ) {
+			continue; // Skip free payments
+		}
+
+		if( 'publish' !== $payment->status ) {
+			continue; // Skip anything that is a renewal or not complete
+		}
+
+		$datediff   = $now - strtotime( $payment->date, $now );
+		$days_since = floor( $datediff / ( 60 * 60 * 24 ) );
+
+		if( $days_since > 365 ) {
+			continue; // We will only count payments made within the last 365 days
+		}
+
+		foreach( $payment->cart_details as $item ) {
+
+			if( $bundle_id === (int) $item['id'] ) {
+				return $paths; // Customer has already purchased core bundle
+			}
+
+			if( ! $item['price'] > 0 ) {
+				continue; // Skip free items and 100% discounted items
+			}
+
+			$discount += ( $item['price'] - $item['tax'] ); // Add the purchase price to the discount
+
+		}
+
+	}
+
+	if( $discount >= 899 ) {
+		$discount = 898.00; // Min purchase price of $1.00
+	}
+
+	$paths[] = array(
+		'download_id' => $bundle_id,
+		'price_id'    => false,
+		'discount'    => $discount,
+		'pro_rated'   => false
+	);
+
+	return $paths;
+}
+add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_all_access_upgrade_path', 10, 2 );
 
 /*
  * Disables renewal notifications for specific products
