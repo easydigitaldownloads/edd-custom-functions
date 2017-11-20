@@ -15,10 +15,87 @@ define( 'EDD_MENU_POSITION', 35 );
 define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 
 // Enable CC option in GF Help Scout add-on
-add_filter( 'gform_helpscout_enable_cc', '__return_false' );
+//add_filter( 'gform_helpscout_enable_cc', '__return_false' );
 
 // Disable API request logging
 add_filter( 'edd_api_log_requests', '__return_false' );
+
+/*
+ * Registers the upgrade path for All Access pass
+ */
+function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
+
+	if( false !== strpos( home_url(), 'staging' ) ) {
+
+		$bundle_id = 1046254; // ID of the all access pass on staging
+
+	} else {
+
+		// TODO: set to real ID
+		$bundle_id = 1150319; // ID of the all access pass on live
+	
+	}
+
+	if( ! is_user_logged_in() || is_admin() ) {
+		return $paths;
+	}
+
+	$discount  = 0.00;
+	$customer  = new EDD_Customer( get_current_user_id(), true );
+
+	if( ! $customer->purchase_value > 0 ) {
+		return $paths;
+	}
+
+	$now = current_time( 'timestamp' );
+
+	foreach( $customer->get_payments( 'publish' ) as $payment ) {
+
+		if( ! $payment->total > 0 ) {
+			continue; // Skip free payments
+		}
+
+		if( 'publish' !== $payment->status ) {
+			continue; // Skip anything that is a renewal or not complete
+		}
+
+		$datediff   = $now - strtotime( $payment->date, $now );
+		$days_since = floor( $datediff / ( 60 * 60 * 24 ) );
+
+		if( $days_since > 365 ) {
+			continue; // We will only count payments made within the last 365 days
+		}
+
+		foreach( $payment->cart_details as $item ) {
+
+			if( $bundle_id === (int) $item['id'] ) {
+				return $paths; // Customer has already purchased core bundle
+			}
+
+			if( ! $item['price'] > 0 ) {
+				continue; // Skip free items and 100% discounted items
+			}
+
+			$discount += ( $item['price'] - $item['tax'] ); // Add the purchase price to the discount
+
+		}
+
+	}
+
+	if( $discount >= 899 ) {
+		$discount = 898.00; // Min purchase price of $1.00
+	}
+
+	$paths[] = array(
+		'download_id' => $bundle_id,
+		'price_id'    => false,
+		'discount'    => $discount,
+		'pro_rated'   => false
+	);
+
+	return $paths;
+}
+add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_all_access_upgrade_path', 10, 2 );
 
 /*
  * Disables renewal notifications for specific products
@@ -44,7 +121,7 @@ add_filter( 'edd_sl_send_renewal_reminder', 'eddwp_maybe_disable_renewal_notice'
  */
 function eddwp_edd_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 	$license = get_post( $license_id );
-	if( strtotime( $license->post_date ) < strtotime( 'September 9, 2017' ) ) {
+	if( is_a( $license, 'WP_Post' ) && strtotime( $license->post_date ) < strtotime( 'September 9, 2017' ) ) {
 		$renewal_discount = 30;
 	}
 	return $renewal_discount;
@@ -467,3 +544,82 @@ h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
     echo ob_get_clean();
 }
 add_action( 'monsterinsights_tracking_before', 'eddcf_monsterinsights_performance_frontend_tracking_options_before_analytics' );
+
+function eddcf_throw_cancel_warning() {
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	$purchase_history_page = edd_get_option( 'purchase_history', '' );
+	if ( ! is_page( $purchase_history_page ) ) {
+		return;
+	}
+
+	?>
+	<script>
+		jQuery(function($) {
+			$('.edd_subscription_cancel').click(function (e) {
+				var accepted = confirm('By canceling your subscription, you may be opting out of any previous pricing agreements. Any purchases for this product going forward will be at the current pricing, which may differ from your existing subscription terms.');
+				if (accepted == true) {
+					// They clicked OK...so just move on.
+				} else {
+					e.preventDefault();
+					return false;
+				}
+			});
+		});
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'eddcf_throw_cancel_warning', 9999999999 );
+
+function eddcf_renewal_license_warning( $item ) {
+	if ( empty( $item['options']['is_renewal'] ) ) {
+		return;
+	}
+
+	$payment_ids = get_post_meta( $item['options']['license_id'], '_edd_sl_payment_id' );
+
+	if( ! is_array( $payment_ids ) ) {
+		return;
+	}
+
+	$sub         = false;
+	$payment_id  = end( $payment_ids );
+	$download_id = edd_software_licensing()->get_download_id( $item['options']['license_id'] );
+
+	if( $payment_id && $download_id )  {
+
+		$subs_db = new EDD_Subscriptions_DB();
+		$subs = $subs_db->get_subscriptions( array(
+			'product_id'        => $download_id,
+			'parent_payment_id' => $payment_id,
+			'status'            => array( 'active', 'trialling' ),
+			'number'            => 1,
+			'order'             => 'DESC'
+		) );
+
+		if( $subs ) {
+			$sub = array_pop( $subs );
+		}
+
+	}
+
+	$period = EDD_Recurring()->get_pretty_subscription_frequency( $item['options']['recurring']['period'] );
+	$price  = edd_get_download_price( $item['id'] );
+
+	if ( ! empty( $sub ) ) {
+		?>
+		<tr class="renew-existing-sub-warning edd-alert edd-alert-warn">
+			<td colspan="3">
+				<p>
+					The above license for <strong><?php echo edd_get_cart_item_name( $item ); ?></strong> is associated with an existing subscription, which renews <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $sub->recurring_amount ) ); ?></strong>. By manually renewing, your existing subscription will be canceled and the new one will renew <?php echo lcfirst( $period ); ?> at <strong><?php echo edd_currency_filter( edd_sanitize_amount( $price ) ); ?></strong>. Doing this may also opt you out of any existing subscription terms.
+				</p>
+			</td>
+		</tr>
+
+		<?php
+	}
+
+}
+add_action( 'edd_checkout_table_body_last', 'eddcf_renewal_license_warning', 999, 1 );
