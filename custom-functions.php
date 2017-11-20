@@ -126,6 +126,7 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 
 	}
 
+	return $args;
 
 }
 add_filter( 'edd_recurring_create_subscription_args', 'eddwp_handle_all_access_pass_upgrade_billing', 99, 5 );
@@ -148,6 +149,8 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 	}
 
 	$args['expiration'] = date( 'Y-m-d H:i:s', strtotime( '+1 Year' ) );
+
+	return $args;
 
 }
 add_filter( 'edd_recurring_pre_record_signup_args', 'handle_subscription_upgrade_expiration', 99, 2 );
