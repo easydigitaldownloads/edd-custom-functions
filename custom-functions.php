@@ -98,31 +98,63 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_all_access_upgrade_path', 10, 2 );
 
 function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gateway, $download_id, $price_id ) {
-	if( false !== strpos( home_url(), 'staging' ) ) {
 
-		$bundle_id = 1046254; // ID of the all access pass on staging
+	$downloads = ! is_array( $downloads ) ? array() : $downloads;
 
-	} else {
+	foreach ( $downloads as $download ) {
 
-		// TODO: set to real ID
-		$bundle_id = 1150319; // ID of the all access pass on live
+		// Account for the fact that PayPal Express deals with post-payment creation, which means we have item_number in play.
+		$options = isset( $download['item_number'] ) ? : $download['options'];
 
-	}
+		if ( ! isset( $options['is_upgrade'] ) ) {
+			continue;
+		}
 
-	if ( (int) $download_id !== $bundle_id ) {
-		return $args;
-	}
+		if ( (int) $download['id'] !== (int) $download_id ) {
+			continue;
+		}
 
-	switch( $gateway ) {
+		if ( isset( $options['price_id'] ) && $price_id != $options['price_id'] ) {
+			continue;
+		}
 
-		case 'stripe':
-			$args['trial_end'] = strtotime( '+1 Year' );
-			break;
+		$license_id = isset( $options['license_id'] ) ? $options['license_id'] : false;
+		if ( empty( $license_id ) ) {
+			continue;
+		}
 
-		case 'paypalpro':
-		case 'paypalexpress':
-			$args['PROFILESTARTDATE'] = date( 'Y-m-d\Tg:i:s', strtotime( '+1 Year' ) );
-			break;
+		$license_expiration = edd_software_licensing()->get_license_expiration( $license_id );
+		if ( 'lifetime' === $license_expiration ) {
+			continue;
+		}
+
+		if( false !== strpos( home_url(), 'staging' ) ) {
+
+			$bundle_id = 1046254; // ID of the all access pass on staging
+
+		} else {
+
+			// TODO: set to real ID
+			$bundle_id = 1150319; // ID of the all access pass on live
+
+		}
+
+		if ( (int) $download_id !== $bundle_id ) {
+			continue;
+		}
+
+		switch( $gateway ) {
+
+			case 'stripe':
+				$args['trial_end'] = strtotime( '+1 Year' );
+				break;
+
+			case 'paypalpro':
+			case 'paypalexpress':
+				$args['PROFILESTARTDATE'] = date( 'Y-m-d\Tg:i:s', strtotime( '+1 Year' ) );
+				break;
+
+		}
 
 	}
 
@@ -133,22 +165,44 @@ add_filter( 'edd_recurring_create_subscription_args', 'eddwp_handle_all_access_p
 
 function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gateway_data ) {
 
-	if( false !== strpos( home_url(), 'staging' ) ) {
+	$download_id = $args['product_id'];
 
-		$bundle_id = 1046254; // ID of the all access pass on staging
+	foreach ( $recurring_gateway_data->purchase_data['downloads'] as $download ) {
+		if ( (int) $download['id'] !== (int) $download_id ) {
+			continue;
+		}
 
-	} else {
+		if ( ! isset( $download['options']['is_upgrade'] ) ) {
+			continue;
+		}
 
-		// TODO: set to real ID
-		$bundle_id = 1150319; // ID of the all access pass on live
+		$license_id = isset( $download['options']['license_id'] ) ? $download['options']['license_id'] : false;
+		if ( empty( $license_id ) ) {
+			continue;
+		}
 
+		$license_expiration = edd_software_licensing()->get_license_expiration( $license_id );
+		if ( 'lifetime' === $license_expiration ) {
+			continue;
+		}
+
+		if( false !== strpos( home_url(), 'staging' ) ) {
+
+			$bundle_id = 1046254; // ID of the all access pass on staging
+
+		} else {
+
+			// TODO: set to real ID
+			$bundle_id = 1150319; // ID of the all access pass on live
+
+		}
+
+		if ( (int) $args['product_id'] !== $bundle_id ) {
+			continue;
+		}
+
+		$args['expiration'] = date( 'Y-m-d H:i:s', strtotime( '+1 Year' ) );
 	}
-
-	if ( (int) $args['product_id'] !== $bundle_id ) {
-		return $args;
-	}
-
-	$args['expiration'] = date( 'Y-m-d H:i:s', strtotime( '+1 Year' ) );
 
 	return $args;
 
