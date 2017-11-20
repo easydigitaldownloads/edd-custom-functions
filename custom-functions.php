@@ -97,6 +97,61 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 }
 add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_all_access_upgrade_path', 10, 2 );
 
+function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gateway, $download_id, $price_id ) {
+	if( false !== strpos( home_url(), 'staging' ) ) {
+
+		$bundle_id = 1046254; // ID of the all access pass on staging
+
+	} else {
+
+		// TODO: set to real ID
+		$bundle_id = 1150319; // ID of the all access pass on live
+
+	}
+
+	if ( (int) $download_id !== $bundle_id ) {
+		return $args;
+	}
+
+	switch( $gateway ) {
+
+		case 'stripe':
+			$args['trial_end'] = strtotime( '+1 Year' );
+			break;
+
+		case 'paypalpro':
+		case 'paypalexpress':
+			$args['PROFILESTARTDATE'] = date( 'Y-m-d\Tg:i:s', strtotime( '+1 Year' ) );
+			break;
+
+	}
+
+
+}
+add_filter( 'edd_recurring_create_subscription_args', 'eddwp_handle_all_access_pass_upgrade_billing', 99, 5 );
+
+function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gateway_data ) {
+
+	if( false !== strpos( home_url(), 'staging' ) ) {
+
+		$bundle_id = 1046254; // ID of the all access pass on staging
+
+	} else {
+
+		// TODO: set to real ID
+		$bundle_id = 1150319; // ID of the all access pass on live
+
+	}
+
+	if ( (int) $args['product_id'] !== $bundle_id ) {
+		return $args;
+	}
+
+	$args['expiration'] = date( 'Y-m-d H:i:s', strtotime( '+1 Year' ) );
+
+}
+add_filter( 'edd_recurring_pre_record_signup_args', 'handle_subscription_upgrade_expiration', 99, 2 );
+
 /*
  * Disables renewal notifications for specific products
  */
