@@ -49,7 +49,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	$now = current_time( 'timestamp' );
 
-	foreach( $customer->get_payments( 'publish' ) as $payment ) {
+	foreach( $customer->get_payments( array( 'publish', 'edd_subscription' ) ) as $payment ) {
 
 		if( ! $payment->total > 0 ) {
 			continue; // Skip free payments
