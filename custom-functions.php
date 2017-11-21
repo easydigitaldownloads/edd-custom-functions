@@ -202,6 +202,32 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pass_upgrade_expiration', 99, 2 );
 
 /**
+ * Show the if the customer has an active All Access Pass on the customer card
+ */
+function eddwp_all_access_customer_card( $customer ) {
+
+	$bundle_id      = eddwp_get_all_access_pass_id();
+	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer->id, 'download_id' => $bundle_id ) );
+
+	if ( $has_all_access['success'] ) {
+		?><span class="edd-fm status approved">All Access</span><?php
+	}
+}
+add_action( 'edd_after_customer_edit_link', 'eddwp_all_access_customer_card', 10, 1 );
+
+function eddwp_all_access_payment_details( $payment_id ) {
+
+	$bundle_id      = eddwp_get_all_access_pass_id();
+	$customer_id    = edd_get_payment_customer_id( $payment_id );
+	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => $bundle_id ) );
+
+	if ( $has_all_access['success'] ) {
+		?><span class="edd-fm status approved">All Access</span><?php
+	}
+}
+add_action( 'edd_payment_view_details', 'eddwp_all_access_payment_details', 10, 1 );
+
+/*
  * Display checkbox to cancel existing subscriptions if purchasing the All Access Pass
  */
 function eddwp_edd_display_sub_cancellation_checkbox() {
