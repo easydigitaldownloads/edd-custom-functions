@@ -146,12 +146,12 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 		switch( $gateway ) {
 
 			case 'stripe':
-				$args['trial_end'] = strtotime( '+1 Year' );
+				$args['trial_end'] = strtotime( '+1 Year', current_time( 'timestamp' ) );
 				break;
 
 			case 'paypalpro':
 			case 'paypalexpress':
-				$args['PROFILESTARTDATE'] = date( 'Y-m-d\Tg:i:s', strtotime( '+1 Year' ) );
+				$args['PROFILESTARTDATE'] = date( 'Y-m-d\Tg:i:s', strtotime( '+1 Year', current_time( 'timestamp' ) ) );
 				break;
 
 		}
@@ -201,7 +201,7 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 			continue;
 		}
 
-		$all_access_pass_expiration = strtotime( '+1 Year' );
+		$all_access_pass_expiration = strtotime( '+1 Year', current_time( 'timestamp' ) );
 		$args['expiration'] = date( 'Y-m-d H:i:s', $all_access_pass_expiration );
 
 		$license = new EDD_SL_License( $license_id );
