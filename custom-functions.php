@@ -197,7 +197,7 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 
 		}
 
-		if ( (int) $args['product_id'] !== $bundle_id ) {
+		if ( (int) $download_id !== $bundle_id ) {
 			continue;
 		}
 
@@ -207,7 +207,7 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 	return $args;
 
 }
-add_filter( 'edd_recurring_pre_record_signup_args', 'handle_subscription_upgrade_expiration', 99, 2 );
+add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pass_upgrade_expiration', 99, 2 );
 
 /*
  * Disables renewal notifications for specific products
