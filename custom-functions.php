@@ -356,7 +356,6 @@ function eddwp_process_subscription_cancellations( $payment_id ) {
 	}
 }
 add_action( 'edd_after_payment_actions', 'eddwp_process_subscription_cancellations', 10, 1 );
->>>>>>> dev
 
 /*
  * Disables renewal notifications for specific products
