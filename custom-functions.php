@@ -213,6 +213,31 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 }
 add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pass_upgrade_expiration', 99, 2 );
 
+/**
+ * Show the if the customer has an active All Access Pass on the customer card
+ *
+ * @since 1.1
+ * @param $customer
+ */
+function eddwp_all_access_customer_card( $customer ) {
+	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer->id, 'download_id' => 24));
+
+	if ( $has_all_access['success'] ) {
+		?><span class="edd-fm status approved">All Access</span><?php
+	}
+}
+add_action( 'edd_after_customer_edit_link', 'eddwp_all_access_customer_card', 10, 1 );
+
+function eddwp_all_access_payment_details( $payment_id ) {
+	$customer_id    = edd_get_payment_customer_id( $payment_id );
+	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => 24));
+
+	if ( $has_all_access['success'] ) {
+		?><span class="edd-fm status approved">All Access</span><?php
+	}
+}
+add_action( 'edd_payment_view_details', 'eddwp_all_access_payment_details', 10, 1 );
+
 /*
  * Disables renewal notifications for specific products
  */
