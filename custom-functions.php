@@ -201,7 +201,11 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 			continue;
 		}
 
-		$args['expiration'] = date( 'Y-m-d H:i:s', strtotime( '+1 Year' ) );
+		$all_access_pass_expiration = date( 'Y-m-d H:i:s', strtotime( '+1 Year' ) );
+		$args['expiration'] = $all_access_pass_expiration;
+
+		$license = new EDD_SL_License( $license_id );
+		$license->expiration = $all_access_pass_expiration;
 	}
 
 	return $args;
