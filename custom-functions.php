@@ -222,6 +222,10 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 		return;
 	}
 
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
 	ob_start();
 	$subscriber    = new EDD_Recurring_Subscriber( get_current_user_id(), true );
 	$subscriptions = $subscriber->get_subscriptions();
