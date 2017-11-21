@@ -205,7 +205,9 @@ add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pas
  * Display checkbox to cancel existing subscriptions if purchasing the All Access Pass
  */
 function eddwp_edd_display_sub_cancellation_checkbox() {
-	if ( ! edd_is_checkout() ) {
+
+	$is_checkout = ( isset( $_POST['action'] ) && 'edd_load_gateway' === $_POST['action'] ) || edd_is_checkout();
+	if ( ! $is_checkout ) {
 		return;
 	}
 
