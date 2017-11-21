@@ -55,7 +55,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 			continue; // Skip free payments
 		}
 
-		if( 'publish' !== $payment->status ) {
+		if( 'publish' !== $payment->status && 'edd_subscription' !== $payment->status ) {
 			continue; // Skip anything that is a renewal or not complete
 		}
 
