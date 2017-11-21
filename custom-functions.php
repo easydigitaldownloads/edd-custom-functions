@@ -20,11 +20,7 @@ define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 // Disable API request logging
 add_filter( 'edd_api_log_requests', '__return_false' );
 
-/*
- * Registers the upgrade path for All Access pass
- */
-function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
-
+function eddwp_get_all_access_pass_id() {
 	if( false !== strpos( home_url(), 'staging' ) ) {
 
 		$bundle_id = 1046254; // ID of the all access pass on staging
@@ -33,8 +29,18 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 		// TODO: set to real ID
 		$bundle_id = 1150319; // ID of the all access pass on live
-	
+
 	}
+
+	return $bundle_id;
+}
+
+/*
+ * Registers the upgrade path for All Access pass
+ */
+function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
+
+	$bundle_id = eddwp_get_all_access_pass_id();
 
 	if( ! is_user_logged_in() || is_admin() ) {
 		return $paths;
@@ -128,16 +134,7 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 			continue;
 		}
 
-		if( false !== strpos( home_url(), 'staging' ) ) {
-
-			$bundle_id = 1046254; // ID of the all access pass on staging
-
-		} else {
-
-			// TODO: set to real ID
-			$bundle_id = 1150319; // ID of the all access pass on live
-
-		}
+		$bundle_id = eddwp_get_all_access_pass_id();
 
 		if ( (int) $download_id !== $bundle_id ) {
 			continue;
@@ -186,16 +183,7 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 			continue;
 		}
 
-		if( false !== strpos( home_url(), 'staging' ) ) {
-
-			$bundle_id = 1046254; // ID of the all access pass on staging
-
-		} else {
-
-			// TODO: set to real ID
-			$bundle_id = 1150319; // ID of the all access pass on live
-
-		}
+		$bundle_id = eddwp_get_all_access_pass_id();
 
 		if ( (int) $download_id !== $bundle_id ) {
 			continue;
@@ -212,6 +200,136 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 
 }
 add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pass_upgrade_expiration', 99, 2 );
+
+/**
+ * Display checkbox to cancel existing subscriptions if purchasing the All Access Pass
+ */
+function eddwp_edd_display_sub_cancellation_checkbox() {
+	if ( ! edd_is_checkout() ) {
+		return;
+	}
+
+	$cart_contents = array_values( edd_get_cart_contents() );
+
+	// Don't show the checkbox if there is more than one product in the cart.
+	if ( count( $cart_contents ) > 1 ) {
+		return;
+	}
+
+	$cart_item = $cart_contents[0];
+	$bundle_id = eddwp_get_all_access_pass_id();
+	if ( (int) $cart_item['id'] !== $bundle_id ) {
+		return;
+	}
+
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	ob_start();
+	$subscriber    = new EDD_Recurring_Subscriber( get_current_user_id(), true );
+	$subscriptions = $subscriber->get_subscriptions();
+
+	if ( ! empty( $subscriptions ) ) {
+		$notice_subs = array();
+		foreach ( $subscriptions as $sub ) {
+
+			if ( 'cancelled' !== $sub->status ) {
+				$notice_download = new EDD_Download( $sub->product_id );
+				$notice_subs[]   = $notice_download->get_name();
+			}
+
+		}
+		$sub_count   = count( $notice_subs );
+		$show_notice = $sub_count > 0 ? true: false;
+
+		if ( $show_notice ) {
+			$notice_subs = implode( ', ', $notice_subs );
+			?>
+			<script>
+				jQuery(function($) {
+					$('#eddwp-confirm-cancel-subs').change(function () {
+						var checked = $(this).is(':checked');
+						var target          = $('input[name="edds_has_other_subs"]');
+						var target_wrapper  = target.parent().parent();
+						if (checked) {
+							target.prop( 'disabled', 'disabled' );
+							target_wrapper.hide();
+						} else {
+							target_wrapper.show();
+							target.prop( 'disabled', '' );
+						}
+					});
+				});
+			</script>
+			<div class="edd-alert edd-alert-warn">
+				<p>
+					<input type="checkbox" id="eddwp-confirm-cancel-subs" name="eddwp_confirm_cancel_subs" value="1" />
+					<span>
+						<label for="eddwp-confirm-cancel-subs">
+							<?php
+							printf( _n( 'Check this box to cancel your existing subscription for %s after your purchase of All Access pass is complete.',
+								'Check this box to have the following subscriptions cancelled after your purchase of All Access Pass is complete: %s',
+								$sub_count,
+								'edd-custom-functions' ),
+								$notice_subs );
+							?>
+						</label>
+					</span>
+					<span>
+						<em><small>Or you can also do this manually from your Account, once your purchase is complete.</small></em>
+					</span>
+				</p>
+			</div>
+			<?php
+		}
+	}
+	echo ob_get_clean();
+}
+add_action( 'edd_purchase_form_before_submit', 'eddwp_edd_display_sub_cancellation_checkbox' );
+
+function eddwp_store_sub_cancellation_selection( $payment_id, $payment_data ) {
+	$cancel_subs_on_complete = isset( $_POST['eddwp_confirm_cancel_subs'] ) ? intval( $_POST['eddwp_confirm_cancel_subs'] ): 0;
+
+	// If the user has selected to cancel the subscriptions, store a meta value so we can do so on payment completion.
+	if ( ! empty( $cancel_subs_on_complete ) ) {
+		$payment = edd_get_payment( $payment_id );
+		$payment->update_meta( '_edd_cancel_existing_subs', $cancel_subs_on_complete );
+		$payment->add_note( 'Customer selected to cancel existing subscriptions at checkout.' );
+	}
+}
+add_action( 'edd_insert_payment', 'eddwp_store_sub_cancellation_selection', 10, 2 );
+
+function eddwp_process_subscription_cancellations( $payment_id ) {
+	$payment = edd_get_payment( $payment_id );
+	if ( empty( $payment ) ) {
+		return;
+	}
+
+	$should_cancel_subs = $payment->get_meta( '_edd_cancel_existing_subs' );
+	if ( empty( $should_cancel_subs ) ) {
+		return;
+	}
+
+	$subscriber    = new EDD_Recurring_Subscriber( $payment->user_id, true );
+	$subscriptions = $subscriber->get_subscriptions();
+
+	$all_access_id = eddwp_get_all_access_pass_id();
+	foreach ( $subscriptions as $subscription ) {
+
+		// Don't cancel the All Access Pass subscription.
+		if ( (int) $subscription->product_id === (int) $all_access_id ) {
+			continue;
+		}
+
+		if ( $subscription->can_cancel() ) {
+			$subscription->cancel( $subscription, true );
+			$subscription->add_note( sprintf( 'Customer selected to cancel subscription while purchasing All Access Pass on Payment #%d', $payment_id ) );
+		}
+
+	}
+}
+add_action( 'edd_after_payment_actions', 'eddwp_process_subscription_cancellations', 10, 1 );
 
 /*
  * Disables renewal notifications for specific products
