@@ -21,19 +21,10 @@ define( 'EDD_CUSTOM_FUNCTIONS', dirname(__FILE__) . '/includes/' );
 add_filter( 'edd_api_log_requests', '__return_false' );
 
 function eddwp_get_all_access_pass_id() {
-	if( false !== strpos( home_url(), 'staging' ) ) {
-
-		$bundle_id = 1046254; // ID of the all access pass on staging
-
-	} else {
-
-		// TODO: set to real ID
-		$bundle_id = 1150319; // ID of the all access pass on live
-
-	}
-
-	return $bundle_id;
+	$aap = get_page_by_path( 'all-access-pass', OBJECT, 'download' );
+	return $aap->ID;
 }
+
 
 /*
  * Registers the upgrade path for All Access pass
@@ -92,7 +83,11 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 		$discount = 898.00; // Min purchase price of $1.00
 	}
 
-	$paths[] = array(
+	if ( ! is_array( $paths ) ) {
+		$paths = array();
+	}
+
+	$paths[$bundle_id] = array(
 		'download_id' => $bundle_id,
 		'price_id'    => false,
 		'discount'    => $discount,
@@ -407,7 +402,7 @@ function eddwp_maybe_start_session( $start_session ) {
 	}
 
 	if( empty( $_REQUEST['edd_action'] ) && false === strpos( $_SERVER['REQUEST_URI'], '/downloads' ) ) {
-	//	$start_session = false;
+		//	$start_session = false;
 	}
 
 	$to_skip = array(
@@ -449,14 +444,14 @@ function eddwp_extenstion_cats_shortcode() {
 
 	if ( $cats ) {
 		$return = '<div class="filter clearfix">';
-			$return .= '<ul class="extension-categories clearfix">';
-				$return .= '<li><a href="' . home_url('/extensions') . '">All</a></li>';
-				$return .= '<li><a href="' . home_url('/extensions/?display=newest') . '">Newest</a></li>';
+		$return .= '<ul class="extension-categories clearfix">';
+		$return .= '<li><a href="' . home_url('/extensions') . '">All</a></li>';
+		$return .= '<li><a href="' . home_url('/extensions/?display=newest') . '">Newest</a></li>';
 
-				foreach( $cats as $cat ) {
-					$return .= '<li><a href="' . get_term_link( $cat->slug, 'extension_category' ) . '">' . $cat->name . '</a></li>';
-				}
-			$return .= '</ul>';
+		foreach( $cats as $cat ) {
+			$return .= '<li><a href="' . get_term_link( $cat->slug, 'extension_category' ) . '">' . $cat->name . '</a></li>';
+		}
+		$return .= '</ul>';
 		$return .= '</div>';
 
 		return $return;
@@ -492,12 +487,12 @@ function eddwp_filter_media_comment_status( $open, $post_id ) {
 add_filter( 'comments_open', 'eddwp_filter_media_comment_status', 10 , 2 );
 
 function eddwp_allowed_mime_types( $existing_mimes ) {
-  $existing_mimes['mp4']  = 'video/mp4';
-  $existing_mimes['ogg']  = 'video/ogg';
-  $existing_mimes['ogv']  = 'video/ogv';
-  $existing_mimes['txt']  = 'text/plain';
+	$existing_mimes['mp4']  = 'video/mp4';
+	$existing_mimes['ogg']  = 'video/ogg';
+	$existing_mimes['ogv']  = 'video/ogv';
+	$existing_mimes['txt']  = 'text/plain';
 
-  return $existing_mimes;
+	return $existing_mimes;
 }
 add_filter( 'upload_mimes', 'eddwp_allowed_mime_types' );
 
@@ -592,7 +587,7 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 		if ( $downloads ) {
 			$field->choices = array();
 			foreach( $downloads as $d ) {
-		  		$field->choices[] = array( 'text' => $d->post_title, 'value' => $d->post_title );
+				$field->choices[] = array( 'text' => $d->post_title, 'value' => $d->post_title );
 			}
 		}
 
@@ -672,27 +667,27 @@ function eddwp_post_grid( $atts ) {
 	if ( $query->have_posts() ) :
 		?>
 		<div class="download-grid two-col narrow-grid download-grid-shortcode">
-		<?php
+			<?php
 			while ( $query->have_posts() ) : $query->the_post();
 				?>
-					<div class="download-grid-item">
-						<?php if ( has_post_thumbnail() ) : ?>
-							<div class="download-grid-thumb-wrap">
-								<a href="<?php the_permalink(); ?>">
-									<?php echo get_the_post_thumbnail( get_the_ID(), 'download-grid-thumb', array( 'class' => 'download-grid-thumb' ) ); ?>
-								</a>
-							</div>
-						<?php endif; ?>
-						<div class="download-grid-item-info">
-							<h4 class="download-grid-title">
-								<?php the_title( sprintf( '<h4 class="download-grid-title"><a href="%s">', esc_url( get_permalink() ) ), '</a></h4>' ); ?>
-							</h4>
-							<?php echo get_post_meta( get_the_ID(), 'ecpt_shortdescription', true ); ?>
+				<div class="download-grid-item">
+					<?php if ( has_post_thumbnail() ) : ?>
+						<div class="download-grid-thumb-wrap">
+							<a href="<?php the_permalink(); ?>">
+								<?php echo get_the_post_thumbnail( get_the_ID(), 'download-grid-thumb', array( 'class' => 'download-grid-thumb' ) ); ?>
+							</a>
 						</div>
+					<?php endif; ?>
+					<div class="download-grid-item-info">
+						<h4 class="download-grid-title">
+							<?php the_title( sprintf( '<h4 class="download-grid-title"><a href="%s">', esc_url( get_permalink() ) ), '</a></h4>' ); ?>
+						</h4>
+						<?php echo get_post_meta( get_the_ID(), 'ecpt_shortdescription', true ); ?>
 					</div>
+				</div>
 				<?php
 			endwhile;
-		?>
+			?>
 		</div>
 		<?php
 		wp_reset_postdata();
@@ -780,30 +775,30 @@ include( EDD_CUSTOM_FUNCTIONS . 'taxonomies.php' );
  * Monster Insights - Google Optimize delay tweak
  */
 add_action( 'plugins_loaded', function() {
-    remove_action( 'monsterinsights_tracking_before', 'monsterinsights_performance_frontend_tracking_options_before_analytics' );
-    add_action( 'monsterinsights_tracking_before', 'eddcf_monsterinsights_performance_frontend_tracking_options_before_analytics' );
+	remove_action( 'monsterinsights_tracking_before', 'monsterinsights_performance_frontend_tracking_options_before_analytics' );
+	add_action( 'monsterinsights_tracking_before', 'eddcf_monsterinsights_performance_frontend_tracking_options_before_analytics' );
 }, 1000);
 
 function eddcf_monsterinsights_performance_frontend_tracking_options_before_analytics() {
-    ob_start();
-    $pagehide = monsterinsights_get_option( 'goptimize_pagehide', false );
-    if ( ! $pagehide ) {
-        return;
-    }
+	ob_start();
+	$pagehide = monsterinsights_get_option( 'goptimize_pagehide', false );
+	if ( ! $pagehide ) {
+		return;
+	}
 
-    $container = monsterinsights_get_option( 'goptimize_container', '' );
-    if ( empty( $container ) ) {
-        return;
-    }
-    ?>
-<style>.monsterinsights-async-hide { opacity: 0 !important} </style>
-<script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
-h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
-(a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
-})(window,document.documentElement,'monsterinsights-async-hide','dataLayer',500,
-{<?php echo "'" . esc_js( $container ) . "'"; ?>:true});</script>
-        <?php
-    echo ob_get_clean();
+	$container = monsterinsights_get_option( 'goptimize_container', '' );
+	if ( empty( $container ) ) {
+		return;
+	}
+	?>
+	<style>.monsterinsights-async-hide { opacity: 0 !important} </style>
+	<script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+			h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+			(a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+		})(window,document.documentElement,'monsterinsights-async-hide','dataLayer',500,
+			{<?php echo "'" . esc_js( $container ) . "'"; ?>:true});</script>
+	<?php
+	echo ob_get_clean();
 }
 add_action( 'monsterinsights_tracking_before', 'eddcf_monsterinsights_performance_frontend_tracking_options_before_analytics' );
 
