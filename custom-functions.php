@@ -52,6 +52,11 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 			continue; // Skip free payments
 		}
 
+		// Skip manual payments.
+		if ( false !== strpos( $payment->gateway, 'manual' ) ) {
+			continue; // skip manual purchases
+		}
+
 		if( 'publish' !== $payment->status && 'edd_subscription' !== $payment->status ) {
 			continue; // Skip anything that is a renewal or not complete
 		}
