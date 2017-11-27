@@ -351,6 +351,8 @@ function eddwp_process_subscription_cancellations( $payment_id ) {
 		}
 
 		if ( $subscription->can_cancel() ) {
+			// This do action is required in order for the subscription to get cancelled at the gateway
+			do_action( 'edd_recurring_cancel_' . $subscription->gateway . '_subscription', $subscription, true );
 			$subscription->cancel( $subscription, true );
 			$subscription->add_note( sprintf( 'Customer selected to cancel subscription while purchasing All Access Pass on Payment #%d', $payment_id ) );
 		}
