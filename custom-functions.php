@@ -887,3 +887,22 @@ function eddcf_renewal_license_warning( $item ) {
 
 }
 add_action( 'edd_checkout_table_body_last', 'eddcf_renewal_license_warning', 999, 1 );
+
+function eddwp_whitelist_sl_domains( $is_local, $url ) {
+	
+	$domains = array(
+		'wpengine.com',
+		'pressdns.com',
+	);
+
+	foreach( $domains as $domain ) {
+
+		if( false !== strpos( $url, $domain ) ) {
+			$is_local = true;
+		}
+
+	}
+
+	return $is_local;
+}
+add_filter( 'edd_sl_is_local_url', 'eddwp_whitelist_sl_domains', 10, 2 );
