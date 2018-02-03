@@ -384,8 +384,8 @@ add_filter( 'edd_sl_send_renewal_reminder', 'eddwp_maybe_disable_renewal_notice'
  * Sets renewal discount to 30% for any customer that purchased before September 1, 2017
  */
 function eddwp_edd_grandfather_renewal_discount( $renewal_discount, $license_id ) {
-	$license = get_post( $license_id );
-	if( is_a( $license, 'WP_Post' ) && strtotime( $license->post_date ) < strtotime( 'September 9, 2017' ) ) {
+	$license = edd_software_licensing()->get_license( $license_id );
+	if( strtotime( $license->date_created ) < strtotime( 'September 9, 2017' ) ) {
 		$renewal_discount = 30;
 	}
 	return $renewal_discount;
