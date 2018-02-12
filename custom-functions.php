@@ -385,7 +385,7 @@ add_filter( 'edd_sl_send_renewal_reminder', 'eddwp_maybe_disable_renewal_notice'
  */
 function eddwp_edd_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 	$license = edd_software_licensing()->get_license( $license_id );
-	if( strtotime( $license->date_created ) < strtotime( 'September 9, 2017' ) ) {
+	if( ! empty( $license->date_created ) && strtotime( $license->date_created ) < strtotime( 'September 9, 2017' ) ) {
 		$renewal_discount = 30;
 	}
 	return $renewal_discount;
