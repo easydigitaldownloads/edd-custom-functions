@@ -25,6 +25,7 @@ class EDD_Custom_SL_Functionality {
 			return $response;
 		}
 
+		$test_users = array();
 		if ( empty( $download_beta ) ) {
 			$test_users = get_option( 'edd_rollout_' . $download->ID, true );
 		}
