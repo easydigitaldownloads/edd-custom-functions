@@ -8,14 +8,9 @@ class EDD_Custom_SL_Functionality {
 			self::$instance = new EDD_Custom_SL_Functionality;
 		}
 
-		self::hooks();
-		self::filters();
+		self::$instance->filters();
 
 		return self::$instance;
-	}
-
-	private function hooks() {
-
 	}
 
 	private function filters() {
