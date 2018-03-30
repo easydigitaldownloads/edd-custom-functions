@@ -68,7 +68,7 @@ class EDD_Custom_SL_Functionality {
 		$response['new_version']    = $found_item['version'];
 
 		$test_users[] = $identifier;
-		update_option( 'edd_rollout_' . $download->ID, $test_users );
+		update_option( 'edd_rollout_' . $download->ID, $test_users, false );
 
 		$package_url = edd_software_licensing()->get_encoded_download_package_url( $download->ID, $license_key, $url, false  );
 		$response['package']       = $package_url;
