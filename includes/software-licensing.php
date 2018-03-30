@@ -62,12 +62,24 @@ class EDD_Custom_SL_Functionality {
 		$response['stable_version'] = $found_item['version'];
 		$response['new_version']    = $found_item['version'];
 
+		// Add this URL/License combination to the testing group.
 		$test_users[] = $identifier;
 		update_option( 'edd_rollout_' . $download->ID, array_unique( $test_users ), false );
 
+		// Define the package URL.
 		$package_url = edd_software_licensing()->get_encoded_download_package_url( $download->ID, $license_key, $url, false  );
 		$response['package']       = $package_url;
 		$response['download_link'] = $package_url;
+
+		// Setup the changelog.
+		$sections = maybe_unserialize( $response['sections'] );
+		if ( empty( $sections['changelog'] ) ) {
+			$sections['changelog'] = wpautop( $found_item['changelog'] );
+		} else {
+			$sections['changelog'] = wpautop( $found_item['changelog'] ) . $sections['changelog'];
+		}
+
+		$response['sections']  = serialize( $sections );
 
 		return $response;
 	}
