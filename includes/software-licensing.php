@@ -19,22 +19,22 @@ class EDD_Custom_SL_Functionality {
 	}
 
 	public function filter_get_version_response( $response, $download, $download_beta ) {
-		if ( $download_beta ) {
-			return $response;
-		}
-
 		$found_item = $this->detect_rollout( $download->ID );
 
 		if ( empty( $found_item['rollout_pct'] ) ) {
 			return $response;
 		}
 
-		$test_users = get_option( 'edd_rollout_' . $download->ID, true );
+		if ( empty( $download_beta ) ) {
+			$test_users = get_option( 'edd_rollout_' . $download->ID, true );
+		}
+
 		if ( ! is_array( $test_users ) ) {
 			$test_users = array();
 		}
 
-		if ( ! empty( $found_item['max_users'] ) && count( $test_users ) >= $found_item['max_users'] ) {
+		// Beta users bypass the max counts (as they are likely already running the base of the version in test).
+		if ( empty( $download_beta ) && ! empty( $found_item['max_users'] ) && count( $test_users ) >= $found_item['max_users'] ) {
 			return $response;
 		}
 
@@ -45,7 +45,10 @@ class EDD_Custom_SL_Functionality {
 		}
 
 		$identifier = md5( $url . $license_key );
-		if ( ! in_array( $identifier, $test_users ) ) {
+
+		// Beta users bypass the random checks and automatically get the test.
+		if ( empty( $download_beta ) && ! in_array( $identifier, $test_users ) ) {
+
 			$random_value = rand( 1, 100 ); // Get this user's randomized string.
 			$test_group   = 100 - $found_item['rollout_pct']; // Determine the threshold in the 1-100 range that is the test group.
 
@@ -55,8 +58,8 @@ class EDD_Custom_SL_Functionality {
 				return $response;
 
 			}
-		}
 
+		}
 
 		// Yay! We've got a test user.
 		$response['stable_version'] = $found_item['version'];
