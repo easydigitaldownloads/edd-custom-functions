@@ -66,7 +66,8 @@ class EDD_Custom_SL_Functionality {
 		$response['stable_version'] = $found_item['version'];
 		$response['new_version']    = $found_item['version'];
 
-		// Add this URL/License combination to the testing group.
+		// Add this URL/License combination to the testing group, so that the package URL can properly define them as
+		// a site that should get the rollout package.
 		$test_users[] = $identifier;
 		update_option( 'edd_rollout_' . $download->ID, array_unique( $test_users ), false );
 
@@ -89,23 +90,37 @@ class EDD_Custom_SL_Functionality {
 	}
 
 	public function filter_file_key( $file_key, $download ) {
+
+		// Determine if there is a rollout defined for this download ID.
 		$found_item = $this->detect_rollout( $download->ID );
 
+		// If no rollout is found in the constant for this download ID, just move along and return the defined
+		// file key in EDD SL settings for the product.
 		if ( ! $found_item ) {
 			return $file_key;
 		}
 
+		// Get the set of users that are already defined to be part of this rollout.
 		$test_users = get_option( 'edd_rollout_' . $download->ID, true );
 		if ( ! is_array( $test_users ) ) {
 			$test_users = array();
 		}
+
+		// Since we have to modify this at the request of `get_version` and when downloading the package,
+		// we need to determine what context we're in.
 		if ( false === stristr( $_SERVER['REQUEST_URI'], 'edd-sl/package_download' ) ) {
+
+			// This is a `get_version` request, so the license and url are passed into the API. At this point we're generating
+			// the package URL, which will be used later.
 			$license_key = ! empty( $_REQUEST['license'] ) ? sanitize_text_field( $_REQUEST['license'] ) : false;
 			$url         = ! empty( $_REQUEST['url'] ) ? edd_software_licensing()->clean_site_url( $_REQUEST['url'] ) : false;
 			if ( false === $license_key || false === $url ) {
 				return $file_key;
 			}
+
 		} else {
+
+			// This was a request to download the package, so we have to deconstruct our token for the needed information.
 			$url_parts = parse_url( $_SERVER['REQUEST_URI'] );
 			$paths     = array_values( explode( '/', $url_parts['path'] ) );
 
@@ -120,11 +135,15 @@ class EDD_Custom_SL_Functionality {
 			$url         = str_replace( '@', ':', $values[4] );
 		}
 
+		// Determine the Identifier of the site requesting the update.
 		$identifier = md5( $url . $license_key );
+
+		// This site was not part of the test group, so just return the file key defined in the download settings.
 		if ( ! in_array( $identifier, $test_users ) ) {
 			return $file_key;
 		}
 
+		// This user was part of the test group, return the file key defined in our rollout settings.
 		return $found_item['file_id'];
 	}
 
