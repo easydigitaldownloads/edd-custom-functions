@@ -48,7 +48,7 @@ class EDD_Custom_SL_Functionality {
 		$identifier = md5( $url . $license_key );
 
 		// Beta users bypass the random checks and automatically get the test.
-		if ( empty( $download_beta ) && ! in_array( $identifier, $test_users ) ) {
+		if ( empty( $download_beta ) && ! array_key_exists( $identifier, $test_users ) ) {
 
 			$random_value = rand( 1, 100 ); // Get this user's randomized string.
 			$test_group   = 100 - $found_item['rollout_pct']; // Determine the threshold in the 1-100 range that is the test group.
@@ -68,8 +68,8 @@ class EDD_Custom_SL_Functionality {
 
 		// Add this URL/License combination to the testing group, so that the package URL can properly define them as
 		// a site that should get the rollout package.
-		$test_users[] = $identifier;
-		update_option( 'edd_rollout_' . $download->ID, array_unique( $test_users ), false );
+		$test_users[ $identifier ] = array( 'url' => $url, 'license_key' => $license_key );
+		update_option( 'edd_rollout_' . $download->ID, $test_users, false );
 
 		// Define the package URL.
 		$package_url = edd_software_licensing()->get_encoded_download_package_url( $download->ID, $license_key, $url, false  );
@@ -139,7 +139,7 @@ class EDD_Custom_SL_Functionality {
 		$identifier = md5( $url . $license_key );
 
 		// This site was not part of the test group, so just return the file key defined in the download settings.
-		if ( ! in_array( $identifier, $test_users ) ) {
+		if ( ! array_key_exists( $identifier, $test_users ) ) {
 			return $file_key;
 		}
 
