@@ -25,14 +25,7 @@ class EDD_Custom_SL_Functionality {
 			return $response;
 		}
 
-		$test_users = array();
-		if ( empty( $download_beta ) ) {
-			$test_users = get_option( 'edd_rollout_' . $download->ID, true );
-		}
-
-		if ( ! is_array( $test_users ) ) {
-			$test_users = array();
-		}
+		$test_users = get_option( 'edd_rollout_' . $download->ID, array() );
 
 		// Beta users bypass the max counts (as they are likely already running the base of the version in test).
 		if ( empty( $download_beta ) && ! empty( $found_item['max_users'] ) && count( $test_users ) >= $found_item['max_users'] ) {
@@ -46,9 +39,8 @@ class EDD_Custom_SL_Functionality {
 		}
 
 		$identifier = md5( $url . $license_key );
-
 		// Beta users bypass the random checks and automatically get the test.
-		if ( empty( $download_beta ) && ! array_key_exists( $identifier, $test_users ) ) {
+		if ( empty( $download_beta ) && empty( $test_users[ $identifier ] ) ) {
 
 			$random_value = rand( 1, 100 ); // Get this user's randomized string.
 			$test_group   = 100 - $found_item['rollout_pct']; // Determine the threshold in the 1-100 range that is the test group.
@@ -101,10 +93,7 @@ class EDD_Custom_SL_Functionality {
 		}
 
 		// Get the set of users that are already defined to be part of this rollout.
-		$test_users = get_option( 'edd_rollout_' . $download->ID, true );
-		if ( ! is_array( $test_users ) ) {
-			$test_users = array();
-		}
+		$test_users = get_option( 'edd_rollout_' . $download->ID, array() );
 
 		// Since we have to modify this at the request of `get_version` and when downloading the package,
 		// we need to determine what context we're in.
@@ -139,7 +128,7 @@ class EDD_Custom_SL_Functionality {
 		$identifier = md5( $url . $license_key );
 
 		// This site was not part of the test group, so just return the file key defined in the download settings.
-		if ( ! array_key_exists( $identifier, $test_users ) ) {
+		if ( empty( $test_users[ $identifier ] ) ) {
 			return $file_key;
 		}
 
@@ -161,4 +150,4 @@ class EDD_Custom_SL_Functionality {
 function eddwp_custom_sl_functionality() {
 	return EDD_Custom_SL_Functionality::instance();
 }
-add_filter( 'plugins_loaded', 'eddwp_custom_sl_functionality', 20 );
+add_action( 'plugins_loaded', 'eddwp_custom_sl_functionality' );
