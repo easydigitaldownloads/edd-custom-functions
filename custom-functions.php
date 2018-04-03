@@ -217,6 +217,10 @@ add_action( 'edd_after_customer_edit_link', 'eddwp_all_access_customer_card', 10
 
 function eddwp_all_access_payment_details( $payment_id ) {
 
+	if ( ! function_exists( 'edd_all_access_check' ) ) {
+		return;
+	}
+
 	$bundle_id      = eddwp_get_all_access_pass_id();
 	$customer_id    = edd_get_payment_customer_id( $payment_id );
 	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => $bundle_id ) );
@@ -777,6 +781,7 @@ function pw_edd_auto_apply_discount() {
  * Include additional site functions
  */
 include( EDD_CUSTOM_FUNCTIONS . 'taxonomies.php' );
+include( EDD_CUSTOM_FUNCTIONS . 'software-licensing.php' );
 
 /**
  * Monster Insights - Google Optimize delay tweak
