@@ -4,21 +4,6 @@
  */
 
 
-// SearchWP - Stop automatically performing delta updates
-add_filter( 'searchwp_background_deltas', '__return_false' );
-
-
-// SearchWP - Stop showing notices for missing integration extensions
-add_filter( 'searchwp_missing_integration_notices', '__return_false' );
-
-
-// SearchWP - Modify array of searchable post types
-function pw_edd_searchwp_indexed_types( $types ) {
-	return array( 'post', 'page', 'extension', 'docs', 'videos', 'theme', 'topic', 'forum', 'reply' );
-}
-add_filter( 'searchwp_indexed_post_types', 'pw_edd_searchwp_indexed_types' );
-
-
 // Gravity Forms - Enable CC option in GF Help Scout add-on
 add_filter( 'gform_helpscout_enable_cc', '__return_true' );
 
