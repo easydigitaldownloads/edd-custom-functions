@@ -10,19 +10,19 @@ function eddwp_get_personal_pass_id() {
 	return $persp->ID;
 }
 
-// Get the download ID of the Personal Pass
+// Get the download ID of the Extended Pass
 function eddwp_get_extended_pass_id() {
 	$extp = get_page_by_path( 'extended-pass', OBJECT, 'download' );
 	return $extp->ID;
 }
 
-// Get the download ID of the Personal Pass
+// Get the download ID of the Professional Pass
 function eddwp_get_professional_pass_id() {
 	$prop = get_page_by_path( 'professional-pass', OBJECT, 'download' );
 	return $prop->ID;
 }
 
-// Get the download ID of the Personal Pass
+// Get the download ID of the All Access Pass
 function eddwp_get_all_access_pass_id() {
 	$aap = get_page_by_path( 'all-access-pass', OBJECT, 'download' );
 	return $aap->ID;
