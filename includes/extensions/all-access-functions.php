@@ -32,7 +32,7 @@ function eddwp_get_all_access_pass_id() {
 /*
  * Registers the upgrade path for All Access pass
  */
-function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
+function eddwp_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	$bundle_id = eddwp_get_all_access_pass_id();
 
@@ -104,9 +104,12 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	return $paths;
 }
-add_filter( 'edd_sl_get_upgrade_paths', 'pw_edd_all_access_upgrade_path', 10, 2 );
+add_filter( 'edd_sl_get_upgrade_paths', 'eddwp_edd_all_access_upgrade_path', 10, 2 );
 
 
+/**
+ * Handle the All Access upgrade billing by gateway
+ */
 function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gateway, $download_id, $price_id ) {
 
 	$downloads = ! is_array( $downloads ) ? array() : $downloads;
@@ -165,6 +168,9 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 add_filter( 'edd_recurring_create_subscription_args', 'eddwp_handle_all_access_pass_upgrade_billing', 99, 5 );
 
 
+/**
+ * Set the All Access upgrade expiration to 1 year out
+ */
 function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gateway_data ) {
 
 	$download_id = $args['product_id'];
@@ -208,7 +214,7 @@ add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pas
 
 
 /**
- * Show the if the customer has an active All Access Pass on the customer card
+ * Show All Access indicator on Customer card if customer has purchased
  */
 function eddwp_all_access_customer_card( $customer ) {
 
@@ -221,6 +227,10 @@ function eddwp_all_access_customer_card( $customer ) {
 }
 add_action( 'edd_after_customer_edit_link', 'eddwp_all_access_customer_card', 10, 1 );
 
+
+/**
+ * Show All Access indicator in Customer Details section of payment record if customer has purchased
+ */
 function eddwp_all_access_payment_details( $payment_id ) {
 
 	if ( ! function_exists( 'edd_all_access_check' ) ) {
@@ -238,8 +248,8 @@ function eddwp_all_access_payment_details( $payment_id ) {
 add_action( 'edd_payment_view_details', 'eddwp_all_access_payment_details', 10, 1 );
 
 
-/*
- * Display checkbox to cancel existing subscriptions if purchasing the All Access Pass
+/**
+ * Display checkbox to cancel existing subscriptions if purchasing a pass
  */
 function eddwp_edd_display_sub_cancellation_checkbox() {
 
@@ -327,7 +337,12 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 }
 add_action( 'edd_purchase_form_before_submit', 'eddwp_edd_display_sub_cancellation_checkbox' );
 
+
+/**
+ * Store payment meta if customer cancels subscriptions during upgrade
+ */
 function eddwp_store_sub_cancellation_selection( $payment_id, $payment_data ) {
+
 	$cancel_subs_on_complete = isset( $_POST['eddwp_confirm_cancel_subs'] ) ? intval( $_POST['eddwp_confirm_cancel_subs'] ): 0;
 
 	// If the user has selected to cancel the subscriptions, store a meta value so we can do so on payment completion.
@@ -339,7 +354,12 @@ function eddwp_store_sub_cancellation_selection( $payment_id, $payment_data ) {
 }
 add_action( 'edd_insert_payment', 'eddwp_store_sub_cancellation_selection', 10, 2 );
 
+
+/**
+ * Process the subscription cancellation(s)
+ */
 function eddwp_process_subscription_cancellations( $payment_id ) {
+
 	$payment = edd_get_payment( $payment_id );
 	if ( empty( $payment ) ) {
 		return;
@@ -362,6 +382,7 @@ function eddwp_process_subscription_cancellations( $payment_id ) {
 		}
 
 		if ( $subscription->can_cancel() ) {
+
 			// This do action is required in order for the subscription to get cancelled at the gateway
 			do_action( 'edd_recurring_cancel_' . $subscription->gateway . '_subscription', $subscription, true );
 			$subscription->cancel( $subscription, true );
