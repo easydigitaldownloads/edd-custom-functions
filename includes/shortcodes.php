@@ -5,7 +5,7 @@
 
 
 /**
- * Post Grid
+ * Display a grid of downloads (this is styled and current, May 2018)
  */
 function eddwp_post_grid( $atts ) {
 	$default = array(
@@ -70,21 +70,3 @@ function eddwp_post_grid( $atts ) {
 }
 add_shortcode( 'post_grid', 'eddwp_post_grid' ); // let's not use this anymore
 add_shortcode( 'downloads_grid', 'eddwp_post_grid' );
-
-
-/**
- * Divider
- */
-function eddwp_shortcode_divider( $atts, $content = null ) {
-	return '<hr class="divider-shortcode">';
-}
-add_shortcode( 'divider', 'eddwp_shortcode_divider' );
-
-
-/**
- * Clear Row
- */
-function eddwp_shortcode_clear() {
-	return '<div class="clear"></div>';
-}
-add_shortcode( 'clear', 'eddwp_shortcode_clear' );
