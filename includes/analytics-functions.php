@@ -31,7 +31,6 @@ function eddcf_monsterinsights_performance_frontend_tracking_options_before_anal
 	<?php
 	echo ob_get_clean();
 }
-add_action( 'monsterinsights_tracking_before', 'eddcf_monsterinsights_performance_frontend_tracking_options_before_analytics' );
 
 
 /*
