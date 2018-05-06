@@ -28,19 +28,6 @@ add_action( 'pre_get_posts', 'eddwp_query_filters', 999 );
 
 
 /**
- * Disable comments on attachments
- */
-function eddwp_filter_media_comment_status( $open, $post_id ) {
-	$post = get_post( $post_id );
-	if( $post->post_type == 'attachment' ) {
-		return false;
-	}
-	return $open;
-}
-add_filter( 'comments_open', 'eddwp_filter_media_comment_status', 10 , 2 );
-
-
-/**
  * Adjust allowed mime types
  */
 function eddwp_allowed_mime_types( $existing_mimes ) {
