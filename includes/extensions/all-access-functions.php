@@ -28,13 +28,26 @@ function eddwp_get_all_access_pass_id() {
 	return $aap->ID;
 }
 
+// Get the download IDs of all Passes
+function eddwp_get_pass_ids() {
+
+	// The download IDs of all Passes
+	$all_passes = array(
+		eddwp_get_personal_pass_id(),
+		eddwp_get_extended_pass_id(),
+		eddwp_get_professional_pass_id(),
+		eddwp_get_all_access_pass_id()
+	);
+
+	return $all_passes;
+}
 
 /*
- * Registers the upgrade path for All Access pass
+ * Registers the upgrade path for all Passes
  */
-function eddwp_edd_all_access_upgrade_path( $paths, $download_id ) {
+function eddwp_pass_upgrade_paths( $paths ) {
 
-	$pass_id = eddwp_get_all_access_pass_id();
+	$pass_ids = eddwp_get_pass_ids();
 
 	if( ! is_user_logged_in() || is_admin() ) {
 		return $paths;
@@ -76,38 +89,59 @@ function eddwp_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 		foreach( $payment->cart_details as $item ) {
 
-			if( $pass_id === (int) $item['id'] ) {
-				return $paths; // Customer has already purchased core bundle
+			if ( ! in_array( $item['id'], $pass_ids ) ) {
+				echo 'what';
+			} else {
+
+				if( ! $item['price'] > 0 ) {
+					continue; // Skip free items and 100% discounted items
+				}
+
+				$discount += ( $item['price'] - $item['tax'] ); // Add the purchase price to the discount
 			}
 
-			if( ! $item['price'] > 0 ) {
-				continue; // Skip free items and 100% discounted items
-			}
+			switch ( $discount ) {
+				case ( $discount >= 899.00 ) :
+					$discount = 898.00; // Min purchase price of $1.00
+					break;
 
-			$discount += ( $item['price'] - $item['tax'] ); // Add the purchase price to the discount
+				case ( $discount < 899.00 && $discount >= 699.00 ) :
+					$discount = 698.00; // Min purchase price of $1.00
+					break;
+
+				case ( $discount < 699.00 && $discount >= 399.00 ) :
+					$discount = 398.00; // Min purchase price of $1.00
+					break;
+
+				case ( $discount < 399.00 && $discount >= 199.00 ) :
+					$discount = 198.00; // Min purchase price of $1.00
+					break;
+
+				default :
+					$discount = 0.00;
+			}
 
 		}
 
 	}
 
-	if( $discount >= 899 ) {
-		$discount = 898.00; // Min purchase price of $1.00
-	}
-
-	if ( ! is_array( $paths ) ) {
+	if( ! is_array( $paths ) ) {
 		$paths = array();
 	}
 
-	$paths[$pass_id] = array(
-		'download_id' => $pass_id,
-		'price_id'    => false,
-		'discount'    => $discount,
-		'pro_rated'   => false
-	);
+	foreach ( $pass_ids as $pass_id ) {
+
+		$paths[$pass_id] = array(
+			'download_id' => $pass_id,
+			'price_id'    => false,
+			'discount'    => $discount,
+			'pro_rated'   => false
+		);
+	}
 
 	return $paths;
 }
-add_filter( 'edd_sl_get_upgrade_paths', 'eddwp_edd_all_access_upgrade_path', 10, 2 );
+add_filter( 'edd_sl_get_upgrade_paths', 'eddwp_pass_upgrade_paths', 10, 2 );
 
 
 /**
