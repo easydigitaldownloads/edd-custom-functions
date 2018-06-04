@@ -4,24 +4,6 @@
  */
 
 
-// Get the download ID of the Personal Pass
-function eddwp_get_personal_pass_id() {
-	$persp = get_page_by_path( 'personal-pass', OBJECT, 'download' );
-	return $persp->ID;
-}
-
-// Get the download ID of the Extended Pass
-function eddwp_get_extended_pass_id() {
-	$extp = get_page_by_path( 'extended-pass', OBJECT, 'download' );
-	return $extp->ID;
-}
-
-// Get the download ID of the Professional Pass
-function eddwp_get_professional_pass_id() {
-	$prop = get_page_by_path( 'professional-pass', OBJECT, 'download' );
-	return $prop->ID;
-}
-
 // Get the download ID of the All Access Pass
 function eddwp_get_all_access_pass_id() {
 	$aap = get_page_by_path( 'all-access-pass', OBJECT, 'download' );
@@ -34,7 +16,7 @@ function eddwp_get_all_access_pass_id() {
  */
 function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
-	$bundle_id = eddwp_get_all_access_pass_id();
+	$aap_id = eddwp_get_all_access_pass_id();
 
 	if( ! is_user_logged_in() || is_admin() ) {
 		return $paths;
@@ -73,7 +55,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 		foreach( $payment->cart_details as $item ) {
 
-			if( $bundle_id === (int) $item['id'] ) {
+			if( $aap_id === (int) $item['id'] ) {
 				return $paths; // Customer has already purchased core bundle
 			}
 
@@ -95,8 +77,8 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 		$paths = array();
 	}
 
-	$paths[$bundle_id] = array(
-		'download_id' => $bundle_id,
+	$paths[$aap_id] = array(
+		'download_id' => $aap_id,
 		'price_id'    => false,
 		'discount'    => $discount,
 		'pro_rated'   => false
@@ -138,9 +120,9 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 			continue;
 		}
 
-		$bundle_id = eddwp_get_all_access_pass_id();
+		$aap_id = eddwp_get_all_access_pass_id();
 
-		if ( (int) $download_id !== $bundle_id ) {
+		if ( (int) $download_id !== $aap_id ) {
 			continue;
 		}
 
@@ -188,9 +170,9 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 			continue;
 		}
 
-		$bundle_id = eddwp_get_all_access_pass_id();
+		$aap_id = eddwp_get_all_access_pass_id();
 
-		if ( (int) $download_id !== $bundle_id ) {
+		if ( (int) $download_id !== $aap_id ) {
 			continue;
 		}
 
@@ -212,8 +194,8 @@ add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pas
  */
 function eddwp_all_access_customer_card( $customer ) {
 
-	$bundle_id      = eddwp_get_all_access_pass_id();
-	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer->id, 'download_id' => $bundle_id ) );
+	$aap_id      = eddwp_get_all_access_pass_id();
+	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer->id, 'download_id' => $aap_id ) );
 
 	if ( $has_all_access['success'] ) {
 		?><span class="edd-fm status approved">All Access</span><?php
@@ -227,9 +209,9 @@ function eddwp_all_access_payment_details( $payment_id ) {
 		return;
 	}
 
-	$bundle_id      = eddwp_get_all_access_pass_id();
+	$aap_id      = eddwp_get_all_access_pass_id();
 	$customer_id    = edd_get_payment_customer_id( $payment_id );
-	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => $bundle_id ) );
+	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => $aap_id ) );
 
 	if ( $has_all_access['success'] ) {
 		?><span class="edd-fm status approved">All Access</span><?php
@@ -256,8 +238,8 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 	}
 
 	$cart_item = $cart_contents[0];
-	$bundle_id = eddwp_get_all_access_pass_id();
-	if ( (int) $cart_item['id'] !== $bundle_id ) {
+	$aap_id = eddwp_get_all_access_pass_id();
+	if ( (int) $cart_item['id'] !== $aap_id ) {
 		return;
 	}
 
