@@ -88,4 +88,4 @@ function eddcf_throw_cancel_warning() {
 	</script>
 	<?php
 }
-add_action( 'wp_footer', 'eddcf_throw_cancel_warning', 9999999999 );
+//add_action( 'wp_footer', 'eddcf_throw_cancel_warning', 9999999999 );
