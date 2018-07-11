@@ -87,8 +87,10 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	}
 
-	if( $discount >= 899 ) {
-		$discount = 898.00; // Min purchase price of $1.00
+	$aap_price = edd_get_download_price( eddwp_get_all_access_pass_id() );
+
+	if ( $discount >= $aap_price ) {
+		$discount = $aap_price - 1; // Min purchase price of $1.00
 	}
 
 	if ( ! is_array( $paths ) ) {
