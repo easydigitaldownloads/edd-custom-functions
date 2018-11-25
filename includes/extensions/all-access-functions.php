@@ -269,17 +269,15 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 
 	ob_start();
 	$subscriber    = new EDD_Recurring_Subscriber( get_current_user_id(), true );
-	$subscriptions = $subscriber->get_subscriptions();
+	$subscriptions = $subscriber->get_subscriptions( 0, array( 'active', 'failing' ) );
 
 	if ( ! empty( $subscriptions ) ) {
 		$notice_subs = array();
 		foreach ( $subscriptions as $sub ) {
 
-			if ( 'cancelled' !== $sub->status ) {
-				$notice_download = new EDD_Download( $sub->product_id );
-				$notice_subs[]   = $notice_download->get_name();
-			}
-
+			$notice_download = new EDD_Download( $sub->product_id );
+			$notice_subs[]   = $notice_download->get_name();
+			
 		}
 		$sub_count   = count( $notice_subs );
 		$show_notice = $sub_count > 0 ? true: false;
