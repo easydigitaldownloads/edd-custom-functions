@@ -98,14 +98,14 @@ $extensionmeta_1_metabox = array(
 );
 
 // Add extensions (downloads) metabox
-function ecpt_add_extensionmeta_1_meta_box() {
+function eddwp_add_downloads_metabox() {
 	global $extensionmeta_1_metabox;
 
 	foreach ( $extensionmeta_1_metabox['page'] as $page ) {
 		add_meta_box(
 			$extensionmeta_1_metabox['id'],
 			$extensionmeta_1_metabox['title'],
-			'ecpt_show_extensionmeta_1_box',
+			'eddwp_show_downloads_metabox',
 			$page,
 			'normal',
 			'default',
@@ -113,10 +113,10 @@ function ecpt_add_extensionmeta_1_meta_box() {
 		);
 	}
 }
-add_action( 'admin_menu', 'ecpt_add_extensionmeta_1_meta_box' );
+add_action( 'admin_menu', 'eddwp_add_downloads_metabox' );
 
 // Show extensions (downloads) metabox
-function ecpt_show_extensionmeta_1_box() {
+function eddwp_show_downloads_metabox() {
 	global $post, $extensionmeta_1_metabox, $ecpt_prefix, $wp_version;
 
 	// Use nonce for verification
@@ -248,7 +248,7 @@ function ecpt_show_extensionmeta_1_box() {
 }
 
 // Save data from extensions (downloads) metabox
-function ecpt_extensionmeta_1_save( $post_id ) {
+function eddwp_save_downloads_meta( $post_id ) {
 	global $post, $extensionmeta_1_metabox;
 
 	// verify nonce
@@ -292,7 +292,7 @@ function ecpt_extensionmeta_1_save( $post_id ) {
 		}
 	}
 }
-add_action( 'save_post', 'ecpt_extensionmeta_1_save' );
+add_action( 'save_post', 'eddwp_save_downloads_meta' );
 
 
 /**
@@ -327,14 +327,14 @@ $testimonialmeta_2_metabox = array(
 );
 
 // Add testimonials metabox
-function ecpt_add_testimonialmeta_2_meta_box() {
+function eddwp_add_testimonials_metabox() {
 	global $testimonialmeta_2_metabox;
 
 	foreach ( $testimonialmeta_2_metabox['page'] as $page ) {
 		add_meta_box(
 			$testimonialmeta_2_metabox['id'],
 			$testimonialmeta_2_metabox['title'],
-			'ecpt_show_testimonialmeta_2_box',
+			'eddwp_show_testimonials_metabox',
 			$page,
 			'normal',
 			'default',
@@ -342,10 +342,10 @@ function ecpt_add_testimonialmeta_2_meta_box() {
 		);
 	}
 }
-add_action( 'admin_menu', 'ecpt_add_testimonialmeta_2_meta_box' );
+add_action( 'admin_menu', 'eddwp_add_testimonials_metabox' );
 
 // Show testimonials metabox
-function ecpt_show_testimonialmeta_2_box() {
+function eddwp_show_testimonials_metabox() {
 	global $post, $testimonialmeta_2_metabox, $ecpt_prefix, $wp_version;
 
 	// Use nonce for verification
@@ -477,7 +477,7 @@ function ecpt_show_testimonialmeta_2_box() {
 }
 
 // Save data from testimonials metabox
-function ecpt_testimonialmeta_2_save( $post_id ) {
+function eddwp_save_testimonials_meta( $post_id ) {
 	global $post;
 	global $testimonialmeta_2_metabox;
 
@@ -522,7 +522,7 @@ function ecpt_testimonialmeta_2_save( $post_id ) {
 		}
 	}
 }
-add_action( 'save_post', 'ecpt_testimonialmeta_2_save' );
+add_action( 'save_post', 'eddwp_save_testimonials_meta' );
 
 
 /**
@@ -548,13 +548,13 @@ $partnerdetails_4_metabox = array(
 );
 
 // Add partners metabox
-function ecpt_add_partnerdetails_4_meta_box() {
+function eddwp_add_partners_metabox() {
 	global $partnerdetails_4_metabox;
 
 	foreach ( $partnerdetails_4_metabox['page'] as $page ) {
 		add_meta_box( $partnerdetails_4_metabox['id'],
 			$partnerdetails_4_metabox['title'],
-			'ecpt_show_partnerdetails_4_box',
+			'eddwp_show_partners_metabox',
 			$page,
 			'normal',
 			'default',
@@ -562,10 +562,10 @@ function ecpt_add_partnerdetails_4_meta_box() {
 		);
 	}
 }
-add_action( 'admin_menu', 'ecpt_add_partnerdetails_4_meta_box' );
+add_action( 'admin_menu', 'eddwp_add_partners_metabox' );
 
 // Show partners metabox
-function ecpt_show_partnerdetails_4_box() {
+function eddwp_show_partners_metabox() {
 	global $post, $partnerdetails_4_metabox, $ecpt_prefix, $wp_version;
 
 	// Use nonce for verification
@@ -697,7 +697,7 @@ function ecpt_show_partnerdetails_4_box() {
 }
 
 // Save data from partners metabox
-function ecpt_partnerdetails_4_save( $post_id ) {
+function eddwp_save_partners_meta( $post_id ) {
 	global $post;
 	global $partnerdetails_4_metabox;
 
@@ -742,7 +742,7 @@ function ecpt_partnerdetails_4_save( $post_id ) {
 		}
 	}
 }
-add_action( 'save_post', 'ecpt_partnerdetails_4_save' );
+add_action( 'save_post', 'eddwp_save_partners_meta' );
 
 
 /**
@@ -768,13 +768,13 @@ $simplenoticesproicon_6_metabox = array(
 );
 
 // Add SNP metabox
-function ecpt_add_simplenoticesproicon_6_meta_box() {
+function eddwp_add_simplenoticesproicon_metabox() {
 	global $simplenoticesproicon_6_metabox;
 
 	foreach ( $simplenoticesproicon_6_metabox['page'] as $page ) {
 		add_meta_box( $simplenoticesproicon_6_metabox['id'],
 			$simplenoticesproicon_6_metabox['title'],
-			'ecpt_show_simplenoticesproicon_6_box',
+			'eddwp_show_simplenoticesproicon_metabox',
 			$page,
 			'normal',
 			'default',
@@ -782,10 +782,10 @@ function ecpt_add_simplenoticesproicon_6_meta_box() {
 		);
 	}
 }
-add_action( 'admin_menu', 'ecpt_add_simplenoticesproicon_6_meta_box' );
+add_action( 'admin_menu', 'eddwp_add_simplenoticesproicon_metabox' );
 
 // Show SNP metabox
-function ecpt_show_simplenoticesproicon_6_box() {
+function eddwp_show_simplenoticesproicon_metabox() {
 	global $post, $simplenoticesproicon_6_metabox, $ecpt_prefix, $wp_version;
 
 	// Use nonce for verification
@@ -917,7 +917,7 @@ function ecpt_show_simplenoticesproicon_6_box() {
 }
 
 // Save data from SNP metabox
-function ecpt_simplenoticesproicon_6_save( $post_id ) {
+function eddwp_save_simplenoticesproicon_meta( $post_id ) {
 	global $post;
 	global $simplenoticesproicon_6_metabox;
 
@@ -962,4 +962,4 @@ function ecpt_simplenoticesproicon_6_save( $post_id ) {
 		}
 	}
 }
-add_action( 'save_post', 'ecpt_simplenoticesproicon_6_save' );
+add_action( 'save_post', 'eddwp_save_simplenoticesproicon_meta' );

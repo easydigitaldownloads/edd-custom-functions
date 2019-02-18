@@ -6,7 +6,7 @@
 /**
  * Register taxonomies for custom post types
  */
-function eddwp_custom_taxonomies() {
+function eddwp_theme_custom_taxonomies() {
 
 	// Consultant tags
 	$consultant_tag_labels = array(
@@ -145,4 +145,4 @@ function eddwp_custom_taxonomies() {
 	);
 	register_taxonomy( 'resource_category', 'resource', $resource_args );
 }
-add_action( 'init', 'eddwp_custom_taxonomies' );
+add_action( 'init', 'eddwp_theme_custom_taxonomies' );

@@ -6,7 +6,7 @@
 /**
  * Register custom post types
  */
-function eddwp_custom_post_types() {
+function eddwp_theme_custom_post_types() {
 
 	// Showcase post type
 	$showcase_labels = array(
@@ -230,4 +230,4 @@ function eddwp_custom_post_types() {
 	);
 	register_post_type( 'resource', $resource_args );
 }
-add_action( 'init', 'eddwp_custom_post_types' );
+add_action( 'init', 'eddwp_theme_custom_post_types' );

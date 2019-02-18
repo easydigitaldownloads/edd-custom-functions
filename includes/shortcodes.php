@@ -12,7 +12,7 @@
  *
  * @return string
  */
-function eddwp_shortcode_button( $atts, $content = NULL ) {
+function eddwp_shortcode_button_link( $atts, $content = NULL ) {
 
 	shortcode_atts( array(
 
@@ -72,7 +72,7 @@ function eddwp_shortcode_button( $atts, $content = NULL ) {
 
 	return '<p><a href="' . esc_url( $atts['link'] ) . '" class="' . $button_classes . '" ' . $target . '>' . $fontawesome . $content . '</a></p>';
 }
-add_shortcode( 'button', 'eddwp_shortcode_button' );
+add_shortcode( 'button', 'eddwp_shortcode_button_link' );
 
 
 /**
@@ -83,7 +83,7 @@ add_shortcode( 'button', 'eddwp_shortcode_button' );
  *
  * @return string
  */
-function eddwp_shortcode_toggle( $atts, $content = NULL ) {
+function eddwp_shortcode_toggle_content( $atts, $content = NULL ) {
 
 	shortcode_atts( array(
 
@@ -110,7 +110,7 @@ function eddwp_shortcode_toggle( $atts, $content = NULL ) {
 	$output = ob_get_clean();
 	return $output;
 }
-add_shortcode( 'toggle', 'eddwp_shortcode_toggle' );
+add_shortcode( 'toggle', 'eddwp_shortcode_toggle_content' );
 
 
 /**
