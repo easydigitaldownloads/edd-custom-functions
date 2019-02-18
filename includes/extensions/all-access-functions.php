@@ -277,7 +277,7 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 
 			$notice_download = new EDD_Download( $sub->product_id );
 			$notice_subs[]   = $notice_download->get_name();
-			
+
 		}
 		$sub_count   = count( $notice_subs );
 		$show_notice = $sub_count > 0 ? true: false;
@@ -326,6 +326,7 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 	echo ob_get_clean();
 }
 add_action( 'edd_purchase_form_before_submit', 'eddwp_edd_display_sub_cancellation_checkbox' );
+
 
 function eddwp_store_sub_cancellation_selection( $payment_id, $payment_data ) {
 	$cancel_subs_on_complete = isset( $_POST['eddwp_confirm_cancel_subs'] ) ? intval( $_POST['eddwp_confirm_cancel_subs'] ): 0;
