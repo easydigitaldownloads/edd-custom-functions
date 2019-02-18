@@ -121,7 +121,7 @@ add_shortcode( 'toggle', 'eddwp_shortcode_toggle' );
  *
  * @return string
  */
-function eddwp_shortcode_box( $atts, $content = NULL ) {
+function eddwp_shortcode_box_content( $atts, $content = NULL ) {
 
 	shortcode_atts( array(
 
@@ -138,4 +138,4 @@ function eddwp_shortcode_box( $atts, $content = NULL ) {
 
 	return '<div class="' . $style . '">' . do_shortcode( $content ) . '</div>';
 }
-add_shortcode( 'box', 'eddwp_shortcode_box' );
+add_shortcode( 'box', 'eddwp_shortcode_box_content' );
