@@ -211,3 +211,16 @@ function eddwp_whitelist_sl_domains( $is_local, $url ) {
 	return $is_local;
 }
 add_filter( 'edd_sl_is_local_url', 'eddwp_whitelist_sl_domains', 10, 2 );
+
+/**
+ * Fix Mail Chimp to be Mailchimp
+ */
+function eddwp_account_for_mailchimp_name_change( $args ) {
+	if ( ! empty( $args['item_name'] ) && strtolower( $args['item_name'] ) === 'mail chimp' ) {
+		$args['item_name'] = 'Mailchimp';
+	}
+	return $args;
+}
+add_filter( 'edd_sl_pre_activate_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
+add_filter( 'edd_sl_pre_deactivate_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
+add_filter( 'edd_sl_pre_check_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
