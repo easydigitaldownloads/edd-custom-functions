@@ -216,7 +216,7 @@ add_filter( 'edd_sl_is_local_url', 'eddwp_whitelist_sl_domains', 10, 2 );
  * Fix Mail Chimp to be Mailchimp
  */
 function eddwp_account_for_mailchimp_name_change( $args ) {
-	if ( ! empty( $args['item_name'] ) && strtolower( $args['item_name'] ) == 'mail chimp' ) {
+	if ( ! empty( $args['item_name'] ) && strtolower( $args['item_name'] ) === 'mail chimp' ) {
 		$args['item_name'] = 'Mailchimp';
 	}
 	return $args;
