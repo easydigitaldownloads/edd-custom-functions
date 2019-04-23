@@ -72,7 +72,7 @@ function pw_edd_auto_apply_discount() {
 /**
  * Put site in maintenance mode by setting EDDWP_MAINTENANCE to true in wp-config.php
  */
-function eddwp_maintenance_mode() {
+function eddwp_site_maintenance_mode() {
 	global $pagenow;
 
 	if ( defined( 'EDDWP_MAINTENANCE' ) && EDDWP_MAINTENANCE && $pagenow !== 'wp-login.php' && ! current_user_can( 'manage_options' ) ) {
@@ -82,4 +82,4 @@ function eddwp_maintenance_mode() {
 		die();
 	}
 }
-add_action( 'wp_loaded', 'eddwp_maintenance_mode' );
+add_action( 'wp_loaded', 'eddwp_site_maintenance_mode' );
