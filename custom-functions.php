@@ -33,6 +33,14 @@ include( EDD_CUSTOM_FUNCTIONS . 'taxonomies.php' );
 
 
 /**
+ * Include custom post type functions
+ */
+include( EDD_CUSTOM_FUNCTIONS . 'post-types/post-types.php' );
+include( EDD_CUSTOM_FUNCTIONS . 'post-types/taxonomies.php' );
+include( EDD_CUSTOM_FUNCTIONS . 'post-types/metaboxes.php' );
+
+
+/**
  * Include custom EDD extension functions
  */
 include( EDD_CUSTOM_FUNCTIONS . 'extensions/software-licensing-functions.php' );
