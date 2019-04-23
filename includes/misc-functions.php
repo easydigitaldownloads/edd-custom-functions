@@ -67,3 +67,19 @@ function pw_edd_auto_apply_discount() {
 	}
 }
 //add_action( 'template_redirect', 'pw_edd_auto_apply_discount' );
+
+
+/**
+ * Put site in maintenance mode by setting EDDWP_MAINTENANCE to true in wp-config.php
+ */
+function eddwp_maintenance_mode() {
+	global $pagenow;
+
+	if ( defined( 'EDDWP_MAINTENANCE' ) && EDDWP_MAINTENANCE && $pagenow !== 'wp-login.php' && ! current_user_can( 'manage_options' ) ) {
+		if ( file_exists( WP_CONTENT_DIR . '/maintenance.php' ) ) {
+			require_once( WP_CONTENT_DIR . '/maintenance.php' );
+		}
+		die();
+	}
+}
+add_action( 'wp_loaded', 'eddwp_maintenance_mode' );
