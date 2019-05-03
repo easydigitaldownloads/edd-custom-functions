@@ -211,3 +211,36 @@ function eddwp_whitelist_sl_domains( $is_local, $url ) {
 	return $is_local;
 }
 add_filter( 'edd_sl_is_local_url', 'eddwp_whitelist_sl_domains', 10, 2 );
+
+/**
+ * Fix Mail Chimp to be Mailchimp
+ */
+function eddwp_account_for_mailchimp_name_change( $args ) {
+	if ( ! empty( $args['item_name'] ) && strtolower( $args['item_name'] ) === 'mail chimp' ) {
+		$args['item_name'] = 'Mailchimp';
+	}
+	return $args;
+}
+add_filter( 'edd_sl_pre_activate_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
+add_filter( 'edd_sl_pre_deactivate_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
+add_filter( 'edd_sl_pre_check_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
+
+function eddwp_account_for_mailchimp_name_change_on_get_version( $download_id, $name ) {
+
+	if ( 'mail chimp' !== strtolower( $name ) ) {
+		return $download_id;
+	}
+
+	return 746;
+}
+add_filter( 'edd_sl_get_download_id_by_name', 'eddwp_account_for_mailchimp_name_change_on_get_version', 10, 2 );
+
+function eddwp_account_for_mailchimp_name_change_on_check_item_name( $match, $download_id, $item_name, $license ) {
+
+	if ( 'mail chimp' === strtolower( $item_name ) && 746 == $download_id ) {
+		$match = true;
+	}
+
+	return $match;
+}
+add_filter( 'edd_sl_check_item_name', 'eddwp_account_for_mailchimp_name_change_on_check_item_name', 10, 4 );
