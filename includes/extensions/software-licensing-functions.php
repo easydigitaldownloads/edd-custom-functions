@@ -244,3 +244,4 @@ function eddwp_account_for_mailchimp_name_change_on_check_item_name( $match, $do
 	return $match;
 }
 add_filter( 'edd_sl_check_item_name', 'eddwp_account_for_mailchimp_name_change_on_check_item_name', 10, 4 );
+
