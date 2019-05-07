@@ -4,6 +4,111 @@
  */
 
 /**
+ * Posts meta
+ */
+$posts_metabox = array(
+	'id' => 'custom_postmeta',
+	'title' => 'Custom Post Meta',
+	'page' => array( 'post' ),
+	'context' => 'normal',
+	'priority' => 'default',
+	'fields' => array(
+		array(
+			'name'        => 'Subtitle',
+			'desc'        => 'Saved in the same location used by the Subtitles plugin. Temporary solution for WP 5.x compatibility.',
+			'id'          => '_subtitle',
+			'class'       => 'post_subtitle',
+			'type'        => 'text',
+			'rich_editor' => 0,
+			'max'         => 0
+		),
+	),
+);
+
+// Add posts metabox
+function eddwp_add_posts_metabox() {
+	global $posts_metabox;
+
+	foreach ( $posts_metabox['page'] as $page ) {
+		add_meta_box(
+			$posts_metabox['id'],
+			$posts_metabox['title'],
+			'eddwp_show_posts_metabox',
+			$page,
+			$posts_metabox['context'],
+			$posts_metabox['priority'],
+			$posts_metabox
+		);
+	}
+}
+add_action( 'admin_menu', 'eddwp_add_posts_metabox' );
+
+// Show posts metabox
+function eddwp_show_posts_metabox() {
+	global $post, $posts_metabox;
+
+	// Use nonce for verification
+	echo '<input type="hidden" name="eddwp_postmeta_meta_box_nonce" value="', wp_create_nonce( basename( __FILE__ ) ), '" />';
+
+	echo '<table class="form-table">';
+
+	foreach ( $posts_metabox['fields'] as $field ) {
+
+		// get current post meta data
+		$meta = get_post_meta( $post->ID, $field['id'], true );
+
+		echo '<tr><th style="width:20%"><label for="', $field['id'], '">', stripslashes( $field['name'] ), '</label></th>',
+		'<td>';
+
+		if ( 'text' === $field['type'] ) {
+			echo '<input type="text" name="', $field['id'], '" id="', $field['id'], '" value="', $meta ? $meta : '', '" size="30" style="width:97%" /><br/>', '', stripslashes( $field['desc'] );
+		}
+
+		echo '<td></tr>';
+	}
+
+	echo '</table>';
+}
+
+// Save data from posts metabox
+function eddwp_save_posts_meta( $post_id ) {
+	global $post, $posts_metabox;
+
+	// verify nonce
+	if ( ! isset( $_POST['eddwp_postmeta_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['eddwp_postmeta_meta_box_nonce'], basename( __FILE__ ) ) ) {
+		return $post_id;
+	}
+
+	// check autosave
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return $post_id;
+	}
+
+	// check permissions
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return $post_id;
+	}
+
+	foreach ( $posts_metabox['fields'] as $field ) {
+
+		$old = get_post_meta( $post_id, $field['id'], true );
+		$new = $_POST[ $field['id'] ];
+
+		if ( $new && $new != $old ) {
+
+			if ( is_string( $new ) ) {
+				$new = $new;
+			}
+			update_post_meta( $post_id, $field['id'], $new );
+
+		} elseif ( '' == $new && $old ) {
+			delete_post_meta( $post_id, $field['id'], $old );
+		}
+	}
+}
+add_action( 'save_post', 'eddwp_save_posts_meta' );
+
+/**
  * Extensions (Downloads) meta
  */
 $extensionmeta_1_metabox = array(
