@@ -43,6 +43,10 @@ function eddwp_maybe_start_session( $start_session ) {
 		$start_session = false;
 	}
 
+	if ( strpos( $_SERVER['REQUEST_URI'], '/blog' ) !== false ) {
+		$start_session = false;
+	}
+
 	// Finally, if there is a discount in the GET parameters, we should always start a session, so it applies correctly.
 	if ( ! empty( $_GET['discount'] ) ) {
 		$start_session = true;
@@ -51,3 +55,25 @@ function eddwp_maybe_start_session( $start_session ) {
 	return $start_session;
 }
 add_filter( 'edd_start_session', 'eddwp_maybe_start_session', 10, 1 );
+
+/**
+ * Conditionally load the Stripe JS
+ *
+ * Should only load the Stripe JS on non-blog post realted content.
+ */
+function eddwp_enqueue_stripe_scripts() {
+	if ( strpos( $_SERVER['REQUEST_URI'], '/blog' ) === false ) {
+		edd_stripe_js();
+	}
+}
+add_action( 'wp_enqueue_scripts', 'eddwp_enqueue_stripe_scripts', 100 );
+
+/**
+ * Anytime we need to remove actions from core, we can use this function.
+ *
+ * By doing it on `init` we can wait until the last minute to remove any actions before we move forward.
+ */
+function eddwp_remove_actions() {
+	remove_action( 'wp_enqueue_scripts', 'edd_stripe_js', 100 );
+}
+add_action( 'init', 'eddwp_remove_actions' );
