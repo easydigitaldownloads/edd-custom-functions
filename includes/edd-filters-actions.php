@@ -75,5 +75,8 @@ add_action( 'wp_enqueue_scripts', 'eddwp_enqueue_stripe_scripts', 100 );
  */
 function eddwp_remove_actions() {
 	remove_action( 'wp_enqueue_scripts', 'edd_stripe_js', 100 );
+	if ( strpos( $_SERVER['REQUEST_URI'], '/blog' ) !== false ) {
+		remove_action( 'wp_enqueue_scripts', 'rcp_load_gateway_scripts', 100 );
+	}
 }
 add_action( 'init', 'eddwp_remove_actions' );
