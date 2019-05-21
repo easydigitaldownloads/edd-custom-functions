@@ -77,6 +77,10 @@ function eddwp_remove_actions() {
 	remove_action( 'wp_enqueue_scripts', 'edd_stripe_js', 100 );
 	if ( strpos( $_SERVER['REQUEST_URI'], '/blog' ) !== false ) {
 		remove_action( 'wp_enqueue_scripts', 'rcp_load_gateway_scripts', 100 );
+		if ( class_exists( 'EDD_Jilt_Loader' ) ) {
+			remove_action( 'plugins_loaded', array( EDD_Jilt_Loader::instance(), 'init_plugin' ) );
+		}
 	}
 }
-add_action( 'init', 'eddwp_remove_actions' );
+add_action( 'plugins_loaded', 'eddwp_remove_actions', -1 );
+
