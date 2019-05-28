@@ -56,6 +56,7 @@ function eddwp_maybe_start_session( $start_session ) {
 }
 add_filter( 'edd_start_session', 'eddwp_maybe_start_session', 10, 1 );
 
+
 /**
  * Conditionally load the Stripe JS
  *
@@ -67,6 +68,7 @@ function eddwp_enqueue_stripe_scripts() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'eddwp_enqueue_stripe_scripts', 100 );
+
 
 /**
  * Anytime we need to remove actions from core, we can use this function.
@@ -84,3 +86,31 @@ function eddwp_remove_actions() {
 }
 add_action( 'plugins_loaded', 'eddwp_remove_actions', -1 );
 
+
+/**
+ * Empty changelog data before option update calls
+ */
+function eddwp_empty_changelogs( $value, $option, $old_value ) {
+	if ( is_array( $value ) ) {
+
+		// If there is a timeout and a value, it's one of our options probably.
+		if ( ! empty( $value['timeout'] ) && ! empty( $value['value'] ) ) {
+			$plugin_info = json_decode( $value['value'] );
+
+			if ( ! empty( $plugin_info ) ) {
+				if ( ! empty( $plugin_info->sections->changelog ) ) {
+					$plugin_info->sections->changelog = '';
+				}
+
+				if ( ! empty( $plugin_info->changelog ) ) {
+					$plugin_info->changelog = array( '' );
+				}
+			}
+
+			$value['value'] = json_encode( $plugin_info );
+		}
+	}
+
+	return $value;
+}
+add_filter( 'pre_update_option', 'eddwp_empty_changelogs', 10, 3 );
