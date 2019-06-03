@@ -21,6 +21,10 @@ remove_action( 'plugins_loaded', array( 'EDD_Heartbeat', 'init' ) );
  */
 add_filter( 'edd_validate_username', '__return_true' );
 
+/**
+ * Remove RCP/EDD Integration
+ */
+remove_action( 'init', 'rcp_edd_init' );
 
 /**
  * If the page loaded is the homepage, we don't need to start a session if one doesn't exist
