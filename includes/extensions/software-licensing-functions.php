@@ -245,3 +245,79 @@ function eddwp_account_for_mailchimp_name_change_on_check_item_name( $match, $do
 }
 add_filter( 'edd_sl_check_item_name', 'eddwp_account_for_mailchimp_name_change_on_check_item_name', 10, 4 );
 
+/**
+ * Grandfather licenses purchased prior to 2013 as unlimited;
+ *
+ * @param bool $ret         If a license is at it's limit.
+ * @param int  $license_id  The license ID being checked.
+ * @param int  $limit       The default limit.
+ * @param int  $download_id The download ID for the license.
+ *
+ * @return bool
+ * @throws Exception
+ */
+function eddwp_edd_sl_license_at_limit( $ret = false, $license_id = 0, $limit = 0, $download_id = 0 ) {
+
+	$license = edd_software_licensing()->get_license( $license_id );
+	if ( false === $license ) {
+		return $ret;
+	}
+
+	$purchase_id   = $license->payment_id;
+	try {
+		$purchase_date = new DateTime( get_post_field( 'post_date', $purchase_id ) );
+		$limit_date    = new DateTime( '2013-01-01' );
+
+		if ( $purchase_date < $limit_date ) {
+
+			// licenses purchased before January 1, 2013 are unlimited.
+			$ret = false;
+		}
+	} catch ( Exception $e ) {
+		throw new Exception( $e->getMessage() );
+	}
+
+	return $ret;
+
+}
+add_filter( 'edd_sl_license_at_limit', 'eddwp_edd_sl_license_at_limit', 10, 4 );
+
+/**
+ * Filter the license limit for licenses prior to 2013.
+ *
+ * @param int $limit        The current license limit.
+ * @param int $download_id  The Download ID for the license.
+ * @param int $license_id   The license ID.
+ * @param int $price_id     The variable price ID.
+ *
+ * @return int
+ */
+function eddwp_edd_filter_license_limit( $limit, $download_id, $license_id, $price_id ) {
+	$license = edd_software_licensing()->get_license( $license_id );
+	if ( false === $license ) {
+		return $limit;
+	}
+
+	$payment_id   = $license->payment_id;
+	$is_bundle    = false;
+	$bundle_items = array();
+	$downloads    = edd_get_payment_meta_downloads( $payment_id );
+	if ( $downloads ) {
+		foreach ( $downloads as $download ) {
+			if ( 'bundle' == edd_get_download_type( $download['id'] ) && 121068 == $download['id'] ) {
+				$is_bundle    = true;
+				$bundle_items = edd_get_bundled_products( $download['id'] );
+				break;
+			}
+		}
+	}
+
+	if ( $is_bundle && in_array( $download_id, $bundle_items ) ) {
+		return 0;
+	}
+
+	return $limit;
+
+}
+add_filter( 'edd_get_license_limit', 'eddwp_edd_filter_license_limit', 10, 4 );
+
