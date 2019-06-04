@@ -29,6 +29,10 @@ $posts_metabox = array(
 function eddwp_add_posts_metabox() {
 	global $posts_metabox;
 
+	if ( ! is_countable( $posts_metabox['page'] ) ) {
+		return;
+	}
+
 	foreach ( $posts_metabox['page'] as $page ) {
 		add_meta_box(
 			$posts_metabox['id'],
@@ -205,6 +209,10 @@ $extensionmeta_1_metabox = array(
 // Add extensions (downloads) metabox
 function eddwp_add_downloads_metabox() {
 	global $extensionmeta_1_metabox;
+
+	if ( ! is_countable( $extensionmeta_1_metabox['page'] ) ) {
+		return;
+	}
 
 	foreach ( $extensionmeta_1_metabox['page'] as $page ) {
 		add_meta_box(
@@ -435,6 +443,10 @@ $testimonialmeta_2_metabox = array(
 function eddwp_add_testimonials_metabox() {
 	global $testimonialmeta_2_metabox;
 
+	if ( ! is_countable( $testimonialmeta_2_metabox['page']  ) ) {
+		return;
+	}
+
 	foreach ( $testimonialmeta_2_metabox['page'] as $page ) {
 		add_meta_box(
 			$testimonialmeta_2_metabox['id'],
@@ -656,6 +668,10 @@ $partnerdetails_4_metabox = array(
 function eddwp_add_partners_metabox() {
 	global $partnerdetails_4_metabox;
 
+	if ( ! is_countable( $partnerdetails_4_metabox['page'] ) ) {
+		return;
+	}
+
 	foreach ( $partnerdetails_4_metabox['page'] as $page ) {
 		add_meta_box( $partnerdetails_4_metabox['id'],
 			$partnerdetails_4_metabox['title'],
@@ -875,6 +891,10 @@ $simplenoticesproicon_6_metabox = array(
 // Add SNP metabox
 function eddwp_add_simplenoticesproicon_metabox() {
 	global $simplenoticesproicon_6_metabox;
+
+	if ( ! is_countable(  $simplenoticesproicon_6_metabox['page'] ) ) {
+		return;
+	}
 
 	foreach ( $simplenoticesproicon_6_metabox['page'] as $page ) {
 		add_meta_box( $simplenoticesproicon_6_metabox['id'],
