@@ -6,6 +6,7 @@
 /**
  * Posts meta
  */
+global $posts_metabox;
 $posts_metabox = array(
 	'id' => 'custom_postmeta',
 	'title' => 'Custom Post Meta',
@@ -115,6 +116,7 @@ add_action( 'save_post', 'eddwp_save_posts_meta' );
 /**
  * Extensions (Downloads) meta
  */
+global $extensionmeta_1_metabox;
 $extensionmeta_1_metabox = array(
 	'id'       => 'extensionmeta',
 	'title'    => 'Download Meta',
@@ -411,6 +413,7 @@ add_action( 'save_post', 'eddwp_save_downloads_meta' );
 /**
  * Testimonials meta
  */
+global $testimonialmeta_2_metabox;
 $testimonialmeta_2_metabox = array(
 	'id'       => 'testimonialmeta',
 	'title'    => 'Testimonial Meta',
@@ -645,6 +648,7 @@ add_action( 'save_post', 'eddwp_save_testimonials_meta' );
 /**
  * Partners meta
  */
+global $partnerdetails_4_metabox;
 $partnerdetails_4_metabox = array(
 	'id'       => 'partnerdetails',
 	'title'    => 'Partner Details',
@@ -869,6 +873,7 @@ add_action( 'save_post', 'eddwp_save_partners_meta' );
 /**
  * Simple Notices Pro meta
  */
+global $simplenoticesproicon_6_metabox;
 $simplenoticesproicon_6_metabox = array(
 	'id'       => 'simplenoticesproicon',
 	'title'    => 'Simple Notices Pro Icon',
