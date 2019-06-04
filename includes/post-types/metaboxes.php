@@ -6,6 +6,7 @@
 /**
  * Posts meta
  */
+global $posts_metabox;
 $posts_metabox = array(
 	'id' => 'custom_postmeta',
 	'title' => 'Custom Post Meta',
@@ -28,6 +29,10 @@ $posts_metabox = array(
 // Add posts metabox
 function eddwp_add_posts_metabox() {
 	global $posts_metabox;
+
+	if ( ! is_countable( $posts_metabox['page'] ) ) {
+		return;
+	}
 
 	foreach ( $posts_metabox['page'] as $page ) {
 		add_meta_box(
@@ -111,6 +116,7 @@ add_action( 'save_post', 'eddwp_save_posts_meta' );
 /**
  * Extensions (Downloads) meta
  */
+global $extensionmeta_1_metabox;
 $extensionmeta_1_metabox = array(
 	'id'       => 'extensionmeta',
 	'title'    => 'Download Meta',
@@ -205,6 +211,10 @@ $extensionmeta_1_metabox = array(
 // Add extensions (downloads) metabox
 function eddwp_add_downloads_metabox() {
 	global $extensionmeta_1_metabox;
+
+	if ( ! is_countable( $extensionmeta_1_metabox['page'] ) ) {
+		return;
+	}
 
 	foreach ( $extensionmeta_1_metabox['page'] as $page ) {
 		add_meta_box(
@@ -403,6 +413,7 @@ add_action( 'save_post', 'eddwp_save_downloads_meta' );
 /**
  * Testimonials meta
  */
+global $testimonialmeta_2_metabox;
 $testimonialmeta_2_metabox = array(
 	'id'       => 'testimonialmeta',
 	'title'    => 'Testimonial Meta',
@@ -434,6 +445,10 @@ $testimonialmeta_2_metabox = array(
 // Add testimonials metabox
 function eddwp_add_testimonials_metabox() {
 	global $testimonialmeta_2_metabox;
+
+	if ( ! is_countable( $testimonialmeta_2_metabox['page']  ) ) {
+		return;
+	}
 
 	foreach ( $testimonialmeta_2_metabox['page'] as $page ) {
 		add_meta_box(
@@ -633,6 +648,7 @@ add_action( 'save_post', 'eddwp_save_testimonials_meta' );
 /**
  * Partners meta
  */
+global $partnerdetails_4_metabox;
 $partnerdetails_4_metabox = array(
 	'id'       => 'partnerdetails',
 	'title'    => 'Partner Details',
@@ -655,6 +671,10 @@ $partnerdetails_4_metabox = array(
 // Add partners metabox
 function eddwp_add_partners_metabox() {
 	global $partnerdetails_4_metabox;
+
+	if ( ! is_countable( $partnerdetails_4_metabox['page'] ) ) {
+		return;
+	}
 
 	foreach ( $partnerdetails_4_metabox['page'] as $page ) {
 		add_meta_box( $partnerdetails_4_metabox['id'],
@@ -853,6 +873,7 @@ add_action( 'save_post', 'eddwp_save_partners_meta' );
 /**
  * Simple Notices Pro meta
  */
+global $simplenoticesproicon_6_metabox;
 $simplenoticesproicon_6_metabox = array(
 	'id'       => 'simplenoticesproicon',
 	'title'    => 'Simple Notices Pro Icon',
@@ -875,6 +896,10 @@ $simplenoticesproicon_6_metabox = array(
 // Add SNP metabox
 function eddwp_add_simplenoticesproicon_metabox() {
 	global $simplenoticesproicon_6_metabox;
+
+	if ( ! is_countable(  $simplenoticesproicon_6_metabox['page'] ) ) {
+		return;
+	}
 
 	foreach ( $simplenoticesproicon_6_metabox['page'] as $page ) {
 		add_meta_box( $simplenoticesproicon_6_metabox['id'],
