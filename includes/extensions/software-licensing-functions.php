@@ -258,8 +258,8 @@ add_filter( 'edd_sl_check_item_name', 'eddwp_account_for_mailchimp_name_change_o
  */
 function eddwp_edd_sl_license_at_limit( $ret = false, $license_id = 0, $limit = 0, $download_id = 0 ) {
 
-	$license = edd_software_licensing()->get_license( $license_id );
-	if ( false === $license ) {
+	$license = edd_software_licensing()->licenses_db->get( $license_id );
+	if ( empty( $license ) ) {
 		return $ret;
 	}
 
@@ -293,8 +293,8 @@ add_filter( 'edd_sl_license_at_limit', 'eddwp_edd_sl_license_at_limit', 10, 4 );
  * @return int
  */
 function eddwp_edd_filter_license_limit( $limit, $download_id, $license_id, $price_id ) {
-	$license = edd_software_licensing()->get_license( $license_id );
-	if ( false === $license ) {
+	$license = edd_software_licensing()->licenses_db->get( $license_id );
+	if ( empty( $license ) ) {
 		return $limit;
 	}
 
