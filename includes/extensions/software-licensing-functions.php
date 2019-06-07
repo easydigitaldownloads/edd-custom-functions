@@ -213,37 +213,54 @@ function eddwp_whitelist_sl_domains( $is_local, $url ) {
 add_filter( 'edd_sl_is_local_url', 'eddwp_whitelist_sl_domains', 10, 2 );
 
 /**
- * Fix Mail Chimp to be Mailchimp
+ * Fix any file download names changing.
  */
-function eddwp_account_for_mailchimp_name_change( $args ) {
-	if ( ! empty( $args['item_name'] ) && strtolower( $args['item_name'] ) === 'mail chimp' ) {
-		$args['item_name'] = 'Mailchimp';
+function eddwp_account_for_download_name_change( $args ) {
+	if ( ! empty( $args['item_name'] ) ) {
+		if ( strtolower( $args['item_name'] ) === 'mail chimp' ) {
+			$args['item_name'] = 'Mailchimp';
+		}
+
+		if ( strtolower( $args['item_name'] ) === 'edd dropbox file store' ) {
+			$args['item_name'] = 'Dropbox';
+		}
+
 	}
+
+
 	return $args;
 }
-add_filter( 'edd_sl_pre_activate_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
-add_filter( 'edd_sl_pre_deactivate_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
-add_filter( 'edd_sl_pre_check_license_args', 'eddwp_account_for_mailchimp_name_change', 10, 1 );
+add_filter( 'edd_sl_pre_activate_license_args', 'eddwp_account_for_download_name_change', 10, 1 );
+add_filter( 'edd_sl_pre_deactivate_license_args', 'eddwp_account_for_download_name_change', 10, 1 );
+add_filter( 'edd_sl_pre_check_license_args', 'eddwp_account_for_download_name_change', 10, 1 );
 
-function eddwp_account_for_mailchimp_name_change_on_get_version( $download_id, $name ) {
+function eddwp_account_for_download_name_change_on_get_version( $download_id, $name ) {
 
-	if ( 'mail chimp' !== strtolower( $name ) ) {
-		return $download_id;
+	if ( 'mail chimp' === strtolower( $name ) ) {
+		return 746;
 	}
 
-	return 746;
-}
-add_filter( 'edd_sl_get_download_id_by_name', 'eddwp_account_for_mailchimp_name_change_on_get_version', 10, 2 );
+	if ( 'edd dropbox file store' === strtolower( $name ) ) {
+		return 284975;
+	}
 
-function eddwp_account_for_mailchimp_name_change_on_check_item_name( $match, $download_id, $item_name, $license ) {
+	return $download_id;
+}
+add_filter( 'edd_sl_get_download_id_by_name', 'eddwp_account_for_download_name_change_on_get_version', 10, 2 );
+
+function eddwp_account_for_download_name_change_on_check_item_name( $match, $download_id, $item_name, $license ) {
 
 	if ( 'mail chimp' === strtolower( $item_name ) && 746 == $download_id ) {
 		$match = true;
 	}
 
+	if ( 'edd dropbox file store' === strtolower( $item_name ) && 284975 == $download_id ) {
+		$match = true;
+	}
+
 	return $match;
 }
-add_filter( 'edd_sl_check_item_name', 'eddwp_account_for_mailchimp_name_change_on_check_item_name', 10, 4 );
+add_filter( 'edd_sl_check_item_name', 'eddwp_account_for_download_name_change_on_check_item_name', 10, 4 );
 
 /**
  * Grandfather licenses purchased prior to 2013 as unlimited;
