@@ -221,7 +221,7 @@ function eddwp_account_for_download_name_change( $args ) {
 			$args['item_name'] = 'Mailchimp';
 		}
 
-		if ( strtolower( $args['item_name'] ) === 'edd dropbox file store' ) {
+		if ( in_array( strtolower( $args['item_name'] ), array( 'edd dropbox file store', 'edd+dropbox+file+store' ) ) ) {
 			$args['item_name'] = 'Dropbox';
 		}
 
@@ -240,7 +240,7 @@ function eddwp_account_for_download_name_change_on_get_version( $download_id, $n
 		return 746;
 	}
 
-	if ( 'edd dropbox file store' === strtolower( $name ) ) {
+	if ( in_array( strtolower( $name ), array( 'edd dropbox file store', 'edd+dropbox+file+store' ) ) ) {
 		return 284975;
 	}
 
@@ -254,7 +254,7 @@ function eddwp_account_for_download_name_change_on_check_item_name( $match, $dow
 		$match = true;
 	}
 
-	if ( 'edd dropbox file store' === strtolower( $item_name ) && 284975 == $download_id ) {
+	if ( in_array( strtolower( $item_name ), array( 'edd dropbox file store', 'edd+dropbox+file+store' ) ) && 284975 == $download_id ) {
 		$match = true;
 	}
 
