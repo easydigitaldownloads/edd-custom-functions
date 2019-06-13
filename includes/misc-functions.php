@@ -83,13 +83,3 @@ function eddwp_site_maintenance_mode() {
 	}
 }
 add_action( 'wp_loaded', 'eddwp_site_maintenance_mode' );
-
-
-/**
- * Allow .txt files to be uploaded (needed for support form System Info)
- */
-function eddwp_mime_types( $mime_types ){
-	$mime_types['txt'] = 'text/plain';
-	return $mime_types;
-}
-add_filter( 'upload_mimes', 'eddwp_mime_types', 1, 1 );
