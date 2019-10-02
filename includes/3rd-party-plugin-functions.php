@@ -97,3 +97,71 @@ add_filter( 'rcp_subscription_data', 'edd_rcp_force_auto_renew' );
 // Restrict Content Pro -
 remove_action( 'the_excerpt', 'rcp_filter_feed_posts' );
 remove_action( 'the_content', 'rcp_filter_feed_posts' );
+
+
+/**
+ * Simple Notices Pro
+ *
+ * Determine if a sale notice is active (published)
+ *
+ * @return boolean $found true if found, false otherwise
+ */
+function eddwp_sale_notice_active() {
+
+	$args           = array(
+		'posts_per_page' => -1,
+		'meta_key'       => 'eddwp_notice_is_sale',
+		'post_type'      => 'notices',
+		'post_status'    => 'publish',
+	);
+
+	$posts          = get_posts( $args );
+	$found          = false;
+
+	if ( $posts ) {
+		foreach ( $posts as $post ) {
+			$notice_enabled = get_post_meta( $post->ID, '_enabled', true );
+
+			// Is this notice published and enabled?
+			if ( 'publish' === $post->post_status && $notice_enabled ) {
+				$found = true;
+			}
+		}
+	}
+
+	return $found;
+}
+
+
+/**
+ * Simple Notices Pro
+ *
+ * Determine if a Partnership notice is published
+ *
+ * @return boolean $found true if found, false otherwise
+ */
+function eddwp_notice_is_partnership() {
+
+	$args           = array(
+		'posts_per_page' => -1,
+		'meta_key'       => 'eddwp_notice_is_partnership',
+		'post_type'      => 'notices',
+		'post_status'    => 'publish',
+	);
+
+	$posts          = get_posts( $args );
+	$found          = false;
+
+	if ( $posts ) {
+		foreach ( $posts as $post ) {
+			$notice_enabled = get_post_meta( $post->ID, '_enabled', true );
+
+			// Is this notice published and enabled?
+			if ( 'publish' === $post->post_status && $notice_enabled ) {
+				$found = true;
+			}
+		}
+	}
+
+	return $found;
+}
