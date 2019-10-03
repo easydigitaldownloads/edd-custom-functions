@@ -81,19 +81,101 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
 add_filter('gform_pre_render_16', 'edd_gf_extensions_dropdown', 9999, 3 );
 
+/**
+ * Prevent "45 Days" memberships from auto renewing.
+ *
+ * @param bool $auto_renew
+ *
+ * @return bool
+ */
+function edd_rcp_maybe_disable_auto_renew( $auto_renew ) {
 
-// Restrict Content Pro - prevent auto-renewal of 45 day support subscription
-function edd_rcp_force_auto_renew( $data ) {
-
-	if( '45 Days' == $data['subscription_name'] ) {
-		$data['auto_renew'] = false;
+	// Bail if we don't have a level ID.
+	if ( empty( $_POST['rcp_level'] ) ) {
+		return $auto_renew;
 	}
 
-	return $data;
+	$level = rcp_get_subscription_details( absint( $_POST['rcp_level'] ) );
+
+	// Bail if this isn't the 45 Day membership level.
+	if ( empty( $level ) || '45 Days' != $level->name ) {
+		return $auto_renew;
+	}
+
+	return false;
+
 }
-add_filter( 'rcp_subscription_data', 'edd_rcp_force_auto_renew' );
+add_filter( 'rcp_registration_is_recurring', 'edd_rcp_maybe_disable_auto_renew' );
 
 
 // Restrict Content Pro -
 remove_action( 'the_excerpt', 'rcp_filter_feed_posts' );
 remove_action( 'the_content', 'rcp_filter_feed_posts' );
+
+
+/**
+ * Simple Notices Pro
+ *
+ * Determine if a sale notice is active (published)
+ *
+ * @return boolean $found true if found, false otherwise
+ */
+function eddwp_sale_notice_active() {
+
+	$args           = array(
+		'posts_per_page' => -1,
+		'meta_key'       => 'eddwp_notice_is_sale',
+		'post_type'      => 'notices',
+		'post_status'    => 'publish',
+	);
+
+	$posts          = get_posts( $args );
+	$found          = false;
+
+	if ( $posts ) {
+		foreach ( $posts as $post ) {
+			$notice_enabled = get_post_meta( $post->ID, '_enabled', true );
+
+			// Is this notice published and enabled?
+			if ( 'publish' === $post->post_status && $notice_enabled ) {
+				$found = true;
+			}
+		}
+	}
+
+	return $found;
+}
+
+
+/**
+ * Simple Notices Pro
+ *
+ * Determine if a Partnership notice is published
+ *
+ * @return boolean $found true if found, false otherwise
+ */
+function eddwp_notice_is_partnership() {
+
+	$args           = array(
+		'posts_per_page' => -1,
+		'meta_key'       => 'eddwp_notice_is_partnership',
+		'post_type'      => 'notices',
+		'post_status'    => 'publish',
+	);
+
+	$posts          = get_posts( $args );
+	$found          = false;
+
+	if ( $posts ) {
+		foreach ( $posts as $post ) {
+			$notice_enabled = get_post_meta( $post->ID, '_enabled', true );
+
+			// Is this notice published and enabled?
+			if ( 'publish' === $post->post_status && $notice_enabled ) {
+				$found = true;
+			}
+		}
+	}
+
+	return $found;
+}

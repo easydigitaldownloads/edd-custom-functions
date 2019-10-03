@@ -876,16 +876,52 @@ add_action( 'save_post', 'eddwp_save_partners_meta' );
 global $simplenoticesproicon_6_metabox;
 $simplenoticesproicon_6_metabox = array(
 	'id'       => 'simplenoticesproicon',
-	'title'    => 'Simple Notices Pro Icon',
+	'title'    => 'Simple Notices Pro',
 	'page'     => array( 'notices' ),
 	'context'  => 'normal',
 	'priority' => 'default',
 	'fields'   => array(
 		array(
+			'name'        => 'Sale Notice',
+			'desc'        => 'This is a Sale notice.',
+			'id'          => 'eddwp_notice_is_sale',
+			'class'       => 'eddwp_notice_is_sale',
+			'type'        => 'checkbox',
+			'rich_editor' => 0,
+			'max'         => 0
+		),
+		array(
+			'name'        => 'Partnership Notice',
+			'desc'        => 'This is a Partnership notice.',
+			'id'          => 'eddwp_notice_is_partnership',
+			'class'       => 'eddwp_notice_is_partnership',
+			'type'        => 'checkbox',
+			'rich_editor' => 0,
+			'max'         => 0
+		),
+		array(
 			'name'        => 'Font Awesome Icon Name',
-			'desc'        => 'The unique part of the class for the Font Awesome icon. Ex. If the icon class is \\\'fa-shopping-cart\\\', enter \\\'shopping-cart\\\' here.',
+			'desc'        => 'The unique part of the class for the Font Awesome icon. Ex. If the icon class is \\\'fa-shopping-cart\\\', enter \\\'shopping-cart\\\' here. Not all notices display this icon. Leave blank for the default bullhorn.',
 			'id'          => 'ecpt_fa_icon',
 			'class'       => 'ecpt_fa_icon',
+			'type'        => 'text',
+			'rich_editor' => 0,
+			'max'         => 0
+		),
+		array(
+			'name'        => 'Button URL',
+			'desc'        => 'The full URL that the notice button will link to. Not all notices display this button. If no URL is provided, the button will not display at all, regardless of notice type.',
+			'id'          => 'eddwp_partnership_url',
+			'class'       => 'eddwp_partnership_url',
+			'type'        => 'text',
+			'rich_editor' => 0,
+			'max'         => 0
+		),
+		array(
+			'name'        => 'Button Text',
+			'desc'        => 'The notice button text. Not all notices display this button. Leave blank to use "LEARN MORE" as the default (recommended).',
+			'id'          => 'eddwp_partnership_button_text',
+			'class'       => 'eddwp_partnership_button_text',
 			'type'        => 'text',
 			'rich_editor' => 0,
 			'max'         => 0
