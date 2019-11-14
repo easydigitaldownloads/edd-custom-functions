@@ -434,11 +434,12 @@ function eddwp_process_subscription_cancellations( $payment_id ) {
 	$subscriber    = new EDD_Recurring_Subscriber( $payment->user_id, true );
 	$subscriptions = $subscriber->get_subscriptions();
 
-	$all_access_id = eddwp_get_all_access_pass_id();
+	$aap_id  = eddwp_get_all_access_pass_id();
+	$laap_id = eddwp_get_lifetime_all_access_pass_id();
 	foreach ( $subscriptions as $subscription ) {
 
-		// Don't cancel the All Access Pass subscription.
-		if ( (int) $subscription->product_id === (int) $all_access_id ) {
+		// Only cancel the AAP subscription if the user has purchased Lifetime AAP
+		if ( ( (int) $subscription->product_id === (int) $aap_id ) && ! edd_has_user_purchased( $laap_id ) ) {
 			continue;
 		}
 
