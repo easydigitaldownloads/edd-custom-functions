@@ -55,7 +55,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	// We're good to go now, so let's get the IDs of both AAPs
 	$aap_ids = array(
-		'aap' => eddwp_get_all_access_pass_id(),
+		'aap'  => eddwp_get_all_access_pass_id(),
 		'laap' => eddwp_get_lifetime_all_access_pass_id()
 	);
 
@@ -328,11 +328,18 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 		return;
 	}
 
-	$cart_item = $cart_contents[0];
-	$bundle_id = eddwp_get_all_access_pass_id();
-	if ( (int) $cart_item['id'] !== $bundle_id ) {
+	$cart_item    = $cart_contents[0];
+	$cart_item_id = (int) $cart_item['id'];
+	$aap_ids      = array(
+		eddwp_get_all_access_pass_id(),
+		eddwp_get_lifetime_all_access_pass_id()
+	);
+
+	if ( ! in_array( $cart_item_id, $aap_ids ) ) {
 		return;
 	}
+
+	$the_cart_item = edd_get_download_by( 'id', $cart_item_id );
 
 	if ( ! is_user_logged_in() ) {
 		return;
@@ -378,11 +385,13 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 					<span>
 						<label for="eddwp-confirm-cancel-subs">
 							<?php
-							printf( _n( 'Check this box to cancel your existing subscription for %s after your purchase of All Access pass is complete.',
-								'Check this box to have the following subscriptions cancelled after your purchase of All Access Pass is complete: %s',
+							printf( _n( 'Check this box to cancel your existing subscription for %1$s after your purchase of %2$s is complete.',
+								'Check this box to have the following subscriptions cancelled after your purchase of %2$s is complete: %1$s.',
 								$sub_count,
 								'edd-custom-functions' ),
-								$notice_subs );
+								$notice_subs,
+								$the_cart_item->post_title
+							);
 							?>
 						</label>
 					</span>
