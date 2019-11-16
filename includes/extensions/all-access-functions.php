@@ -77,7 +77,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 			continue;
 		}
 
-		// Skip anything that is a renewal or not complete
+		// Skip anything that is not a renewal or not complete
 		if( 'publish' !== $payment->status && 'edd_subscription' !== $payment->status ) {
 			continue;
 		}
@@ -143,7 +143,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 			);
 		}
 
-	// IF AAP has been purchased, but not the Lifetime license, build the Lifetime upgrade link
+	// If AAP has been purchased, but not the Lifetime license, build the Lifetime upgrade link
 	} elseif ( true === $aap_purchased && false === $laap_purchased ) {
 
 		$laap_price = edd_get_download_price( $aap_ids['laap'] );
