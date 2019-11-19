@@ -3,33 +3,14 @@
  * all-access-functions.php
  */
 
-
-// Get the download ID of the Personal Pass
-function eddwp_get_personal_pass_id() {
-	$persp = get_page_by_path( 'personal-pass', OBJECT, 'download' );
-	return $persp->ID;
-}
-
-// Get the download ID of the Extended Pass
-function eddwp_get_extended_pass_id() {
-	$extp = get_page_by_path( 'extended-pass', OBJECT, 'download' );
-	return $extp->ID;
-}
-
-// Get the download ID of the Professional Pass
-function eddwp_get_professional_pass_id() {
-	$prop = get_page_by_path( 'professional-pass', OBJECT, 'download' );
-	return $prop->ID;
-}
-
 // Get the download ID of the All Access Pass
-function eddwp_get_all_access_pass_id() {
+function eddwp_get_aap_id() {
 	$aap = get_page_by_path( 'all-access-pass', OBJECT, 'download' );
 	return $aap->ID;
 }
 
 // Get the download ID of the Lifetime All Access Pass
-function eddwp_get_lifetime_all_access_pass_id() {
+function eddwp_get_laap_id() {
 	$laap = get_page_by_path( 'lifetime-all-access-pass', OBJECT, 'download' );
 	return $laap->ID;
 }
@@ -55,8 +36,8 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
 	// We're good to go now, so let's get the IDs of both AAPs
 	$aap_ids = array(
-		'aap'  => eddwp_get_all_access_pass_id(),
-		'laap' => eddwp_get_lifetime_all_access_pass_id()
+		'aap'  => eddwp_get_aap_id(),
+		'laap' => eddwp_get_laap_id()
 	);
 
 	// Set some default values
@@ -211,7 +192,7 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 			continue;
 		}
 
-		$bundle_id = eddwp_get_all_access_pass_id();
+		$bundle_id = eddwp_get_aap_id();
 
 		if ( (int) $download_id !== $bundle_id ) {
 			continue;
@@ -261,7 +242,7 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 			continue;
 		}
 
-		$bundle_id = eddwp_get_all_access_pass_id();
+		$bundle_id = eddwp_get_aap_id();
 
 		if ( (int) $download_id !== $bundle_id ) {
 			continue;
@@ -285,7 +266,7 @@ add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pas
  */
 function eddwp_all_access_customer_card( $customer ) {
 
-	$bundle_id      = eddwp_get_all_access_pass_id();
+	$bundle_id      = eddwp_get_aap_id();
 	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer->id, 'download_id' => $bundle_id ) );
 
 	if ( $has_all_access['success'] ) {
@@ -300,7 +281,7 @@ function eddwp_all_access_payment_details( $payment_id ) {
 		return;
 	}
 
-	$bundle_id      = eddwp_get_all_access_pass_id();
+	$bundle_id      = eddwp_get_aap_id();
 	$customer_id    = edd_get_payment_customer_id( $payment_id );
 	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => $bundle_id ) );
 
@@ -331,8 +312,8 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 	$cart_item    = $cart_contents[0];
 	$cart_item_id = (int) $cart_item['id'];
 	$aap_ids      = array(
-		eddwp_get_all_access_pass_id(),
-		eddwp_get_lifetime_all_access_pass_id()
+		eddwp_get_aap_id(),
+		eddwp_get_laap_id()
 	);
 
 	if ( ! in_array( $cart_item_id, $aap_ids ) ) {
@@ -434,8 +415,8 @@ function eddwp_process_subscription_cancellations( $payment_id ) {
 	$subscriber    = new EDD_Recurring_Subscriber( $payment->user_id, true );
 	$subscriptions = $subscriber->get_subscriptions();
 
-	$aap_id  = eddwp_get_all_access_pass_id();
-	$laap_id = eddwp_get_lifetime_all_access_pass_id();
+	$aap_id  = eddwp_get_aap_id();
+	$laap_id = eddwp_get_laap_id();
 	foreach ( $subscriptions as $subscription ) {
 
 		// Only cancel the AAP subscription if the user has purchased Lifetime AAP
