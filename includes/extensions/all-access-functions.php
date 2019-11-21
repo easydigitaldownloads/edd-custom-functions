@@ -3,29 +3,16 @@
  * all-access-functions.php
  */
 
-
-// Get the download ID of the Personal Pass
-function eddwp_get_personal_pass_id() {
-	$persp = get_page_by_path( 'personal-pass', OBJECT, 'download' );
-	return $persp->ID;
-}
-
-// Get the download ID of the Extended Pass
-function eddwp_get_extended_pass_id() {
-	$extp = get_page_by_path( 'extended-pass', OBJECT, 'download' );
-	return $extp->ID;
-}
-
-// Get the download ID of the Professional Pass
-function eddwp_get_professional_pass_id() {
-	$prop = get_page_by_path( 'professional-pass', OBJECT, 'download' );
-	return $prop->ID;
-}
-
 // Get the download ID of the All Access Pass
-function eddwp_get_all_access_pass_id() {
+function eddwp_get_aap_id() {
 	$aap = get_page_by_path( 'all-access-pass', OBJECT, 'download' );
 	return $aap->ID;
+}
+
+// Get the download ID of the Lifetime All Access Pass
+function eddwp_get_laap_id() {
+	$laap = get_page_by_path( 'lifetime-all-access-pass', OBJECT, 'download' );
+	return $laap->ID;
 }
 
 
@@ -34,75 +21,140 @@ function eddwp_get_all_access_pass_id() {
  */
 function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 
-	$bundle_id = eddwp_get_all_access_pass_id();
-
+	// Only apply upgrade logic to front end customer account areas
 	if( ! is_user_logged_in() || is_admin() ) {
 		return $paths;
 	}
 
-	$discount  = 0.00;
+	// Get customer information
 	$customer  = new EDD_Customer( get_current_user_id(), true );
 
+	// Bail if the customer has never made a purchase
 	if( ! $customer->purchase_value > 0 ) {
 		return $paths;
 	}
 
-	$now = current_time( 'timestamp' );
+	// We're good to go now, so let's get the IDs of both AAPs
+	$aap_ids = array(
+		'aap'  => eddwp_get_aap_id(),
+		'laap' => eddwp_get_laap_id()
+	);
 
+	// Set some default values
+	$discount      = 0.00;
+	$now           = current_time( 'timestamp' );
+	$aap_purchases = array();
+
+	// Look through the customer history for purchases worthy of a discount
 	foreach( $customer->get_payments( array( 'publish', 'edd_subscription' ) ) as $payment ) {
 
+		// Skip free payments
 		if( ! $payment->total > 0 ) {
-			continue; // Skip free payments
+			continue;
 		}
 
-		// Skip manual payments.
-		if ( false !== strpos( $payment->gateway, 'manual' ) ) {
-			continue; // skip manual purchases
+		// Skip manual payments
+		if( false !== strpos( $payment->gateway, 'manual' ) ) {
+			continue;
 		}
 
+		// Skip anything that is not a renewal or not complete
 		if( 'publish' !== $payment->status && 'edd_subscription' !== $payment->status ) {
-			continue; // Skip anything that is a renewal or not complete
+			continue;
 		}
 
+		// Find out how long ago this payment was
 		$datediff   = $now - strtotime( $payment->date, $now );
 		$days_since = floor( $datediff / ( 60 * 60 * 24 ) );
 
+		// Skip this payment if it's more than a year old
 		if( $days_since > 365 ) {
-			continue; // We will only count payments made within the last 365 days
+			continue;
 		}
 
+		// Go through the cart items for the payment
 		foreach( $payment->cart_details as $item ) {
 
-			if( $bundle_id === (int) $item['id'] ) {
-				return $paths; // Customer has already purchased core bundle
+			// If an AAP has been purchased, add the AAP's download ID to an array for later use
+			if( ( $aap_ids['aap'] === (int) $item['id'] ) || ( $aap_ids['laap'] === (int) $item['id'] ) ) {
+				$aap_purchases[] = $item['id'];
 			}
 
+			// Skip free items and 100% discounted items
 			if( ! $item['price'] > 0 ) {
-				continue; // Skip free items and 100% discounted items
+				continue;
 			}
 
-			$discount += ( $item['price'] - $item['tax'] ); // Add the purchase price to the discount
-
+			// Add the cost of this qualified item to the discount value
+			$discount += ( $item['price'] - $item['tax'] );
 		}
-
 	}
 
-	$aap_price = edd_get_download_price( eddwp_get_all_access_pass_id() );
+	// See if either of the AAPs are in the array of qualified purchases
+	$aap_purchased  = in_array( $aap_ids['aap'], $aap_purchases );
+	$laap_purchased = in_array( $aap_ids['laap'], $aap_purchases );
 
-	if ( $discount >= $aap_price ) {
-		$discount = $aap_price - 1; // Min purchase price of $1.00
-	}
-
+	// Make sure $paths is an array
 	if ( ! is_array( $paths ) ) {
 		$paths = array();
 	}
 
-	$paths[$bundle_id] = array(
-		'download_id' => $bundle_id,
-		'price_id'    => false,
-		'discount'    => $discount,
-		'pro_rated'   => false
-	);
+	// If neither AAP has been purchased, build both upgrade links
+	if ( empty( $aap_purchases ) ) {
+
+		foreach ( $aap_ids as $key => $value ) {
+
+			// Get the price of this AAP
+			$pass_price = edd_get_download_price( $value );
+
+			// We know the discount value, but adjust it for THIS upgrade only if necessary
+			$pass_discount = $discount;
+			if ( $pass_discount >= $pass_price ) {
+
+				// Require the upgrade to cost at least $1.00
+				$pass_discount = $pass_price - 1;
+			}
+
+			// Build the upgrade link
+			$paths[$value] = array(
+				'download_id' => $value,
+				'price_id'    => false,
+				'discount'    => $pass_discount,
+				'pro_rated'   => false
+			);
+		}
+
+	// If AAP has been purchased, but not the Lifetime license, build the Lifetime upgrade link
+	} elseif ( true === $aap_purchased && false === $laap_purchased ) {
+
+		$laap_price = edd_get_download_price( $aap_ids['laap'] );
+
+		// Require the upgrade to cost at least $1.00
+		if ( $discount >= $laap_price ) {
+			$discount = $laap_price - 1;
+		}
+
+		// Build the upgrade link
+		$paths[$aap_ids['laap']] = array(
+			'download_id' => $aap_ids['laap'],
+			'price_id'    => false,
+			'discount'    => $discount,
+			'pro_rated'   => false
+		);
+
+	// If the Lifetime AAP has been purchased, just leave everything as-is
+	} elseif ( true === $laap_purchased ) {
+		return $paths;
+	}
+
+	// The overall logic of this function sets us up to offer the LAAP as an upgrade
+	// in the future, so we want to keep that logic. However, as a temporary approach
+	// to only promoting it for BFCM2019, let's make sure we only provide an upgrade
+	// link while the LAAP customizer setting is enabled. When the day comes where
+	// we offer this product permanently, we just delete this logic!
+	if ( 1 !== get_theme_mod( 'eddwp_lifetime_aap_promo_features', 0 ) ) {
+		unset( $paths[$aap_ids['laap']] );
+	}
 
 	return $paths;
 }
@@ -140,7 +192,7 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 			continue;
 		}
 
-		$bundle_id = eddwp_get_all_access_pass_id();
+		$bundle_id = eddwp_get_aap_id();
 
 		if ( (int) $download_id !== $bundle_id ) {
 			continue;
@@ -190,7 +242,7 @@ function eddwp_handle_all_access_pass_upgrade_expiration( $args, $recurring_gate
 			continue;
 		}
 
-		$bundle_id = eddwp_get_all_access_pass_id();
+		$bundle_id = eddwp_get_aap_id();
 
 		if ( (int) $download_id !== $bundle_id ) {
 			continue;
@@ -214,7 +266,7 @@ add_filter( 'edd_recurring_pre_record_signup_args', 'eddwp_handle_all_access_pas
  */
 function eddwp_all_access_customer_card( $customer ) {
 
-	$bundle_id      = eddwp_get_all_access_pass_id();
+	$bundle_id      = eddwp_get_aap_id();
 	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer->id, 'download_id' => $bundle_id ) );
 
 	if ( $has_all_access['success'] ) {
@@ -229,7 +281,7 @@ function eddwp_all_access_payment_details( $payment_id ) {
 		return;
 	}
 
-	$bundle_id      = eddwp_get_all_access_pass_id();
+	$bundle_id      = eddwp_get_aap_id();
 	$customer_id    = edd_get_payment_customer_id( $payment_id );
 	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => $bundle_id ) );
 
@@ -257,11 +309,18 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 		return;
 	}
 
-	$cart_item = $cart_contents[0];
-	$bundle_id = eddwp_get_all_access_pass_id();
-	if ( (int) $cart_item['id'] !== $bundle_id ) {
+	$cart_item    = $cart_contents[0];
+	$cart_item_id = (int) $cart_item['id'];
+	$aap_ids      = array(
+		eddwp_get_aap_id(),
+		eddwp_get_laap_id()
+	);
+
+	if ( ! in_array( $cart_item_id, $aap_ids ) ) {
 		return;
 	}
+
+	$the_cart_item = edd_get_download_by( 'id', $cart_item_id );
 
 	if ( ! is_user_logged_in() ) {
 		return;
@@ -307,11 +366,13 @@ function eddwp_edd_display_sub_cancellation_checkbox() {
 					<span>
 						<label for="eddwp-confirm-cancel-subs">
 							<?php
-							printf( _n( 'Check this box to cancel your existing subscription for %s after your purchase of All Access pass is complete.',
-								'Check this box to have the following subscriptions cancelled after your purchase of All Access Pass is complete: %s',
+							printf( _n( 'Check this box to cancel your existing subscription for %1$s after your purchase of %2$s is complete.',
+								'Check this box to have the following subscriptions cancelled after your purchase of %2$s is complete: %1$s.',
 								$sub_count,
 								'edd-custom-functions' ),
-								$notice_subs );
+								$notice_subs,
+								$the_cart_item->post_title
+							);
 							?>
 						</label>
 					</span>
@@ -354,11 +415,12 @@ function eddwp_process_subscription_cancellations( $payment_id ) {
 	$subscriber    = new EDD_Recurring_Subscriber( $payment->user_id, true );
 	$subscriptions = $subscriber->get_subscriptions();
 
-	$all_access_id = eddwp_get_all_access_pass_id();
+	$aap_id  = eddwp_get_aap_id();
+	$laap_id = eddwp_get_laap_id();
 	foreach ( $subscriptions as $subscription ) {
 
-		// Don't cancel the All Access Pass subscription.
-		if ( (int) $subscription->product_id === (int) $all_access_id ) {
+		// Only cancel the AAP subscription if the user has purchased Lifetime AAP
+		if ( ( (int) $subscription->product_id === (int) $aap_id ) && ! edd_has_user_purchased( $laap_id ) ) {
 			continue;
 		}
 
