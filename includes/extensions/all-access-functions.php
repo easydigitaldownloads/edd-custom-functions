@@ -420,7 +420,7 @@ function eddwp_process_subscription_cancellations( $payment_id ) {
 	foreach ( $subscriptions as $subscription ) {
 
 		// Only cancel the AAP subscription if the user has purchased Lifetime AAP
-		if ( ( (int) $subscription->product_id === (int) $aap_id ) && ! edd_has_user_purchased( $laap_id ) ) {
+		if ( ( (int) $subscription->product_id === (int) $aap_id ) && ! edd_has_user_purchased( $payment->user_id, $laap_id ) ) {
 			continue;
 		}
 
