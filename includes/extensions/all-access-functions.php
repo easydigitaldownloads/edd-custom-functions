@@ -201,6 +201,8 @@ function eddwp_handle_all_access_pass_upgrade_billing( $args, $downloads, $gatew
 		switch( $gateway ) {
 
 			case 'stripe':
+				// Instead of using billing_cycle_anchor to offset the start time of the next subscription, use a free trial.
+				unset( $args['billing_cycle_anchor'] );
 				$args['trial_end'] = strtotime( '+1 Year', current_time( 'timestamp' ) );
 				break;
 
