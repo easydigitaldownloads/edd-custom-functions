@@ -81,8 +81,6 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
 add_filter('gform_pre_render_16', 'edd_gf_extensions_dropdown', 9999, 3 );
 
-// Do NOT include the opening php tag
-
 /**
  * Email notification to admin about Gravity Forms Help Scout API authentication problem and create Help Scout conversation
  *
