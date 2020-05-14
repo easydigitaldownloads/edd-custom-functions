@@ -81,6 +81,55 @@ function edd_gf_extensions_dropdown( $form, $ajax, $values ) {
 add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
 add_filter('gform_pre_render_16', 'edd_gf_extensions_dropdown', 9999, 3 );
 
+// Do NOT include the opening php tag
+
+/**
+ * Email notification to admin about Gravity Forms Help Scout API authentication problem and create Help Scout conversation
+ *
+ */
+function edd_helpscout_authentication_mail( $feed, $entry, $form, $addon ) {
+
+	// Only run this code if there is a problem with Help Scout API authentication.
+	if ( ! $addon->is_authenticated() ) {
+
+		// Create message and headers.
+		$message = sprintf(
+			'Unable to create conversation %s because API was not initialized. %s',
+			'<a href="' . admin_url( 'admin.php?page=gf_entries&view=entry&id=' . absint( $form['id'] ) . '&lid=' . esc_attr( $entry['id'] ) . '">' . $entry['id'] ) . '</a>',
+			'<a href="' . $addon->get_redirect_url() . '">Click here to authenticate with Help Scout.</a>'
+		);
+		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+		// Send the notification.
+		wp_mail(
+			array(
+				'chris@sandhillsdev.com',
+				'keri@sandhillsdev.com',
+			),
+			sprintf( '%s - Help Scout API problem', get_bloginfo( 'name' ) ),
+			$message,
+			$headers
+		);
+
+		// Send Help Scout notification to create conversation.
+		GFAPI::send_notifications( $form, $entry, 'help_scout_conversation_error' );
+	}
+}
+add_action( 'gform_gravityformshelpscout_post_process_feed', 'edd_helpscout_authentication_mail', 10, 4 );
+
+
+/**
+ * Add notification events
+ *
+ */
+function edd_gf_notification_events( $notification_events ) {
+	$notification_events['help_scout_conversation_error'] = 'Help Scout Converation Error';
+
+	return $notification_events;
+}
+add_filter( 'gform_notification_events', 'edd_gf_notification_events' );
+
+
 /**
  * Prevent "45 Days" memberships from auto renewing.
  *
