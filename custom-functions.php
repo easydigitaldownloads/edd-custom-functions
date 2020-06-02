@@ -6,7 +6,7 @@ Plugin URI: http://pippinsplugins.com/
 Description: Put custom functions in this plugin
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
-Version: 11.0
+Version: 12.0
 
 Please think about where your functions belong and place them there. :)
 Create new files and directories if necessary.
