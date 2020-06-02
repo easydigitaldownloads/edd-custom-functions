@@ -82,51 +82,50 @@ add_filter('gform_pre_render_11', 'edd_gf_extensions_dropdown', 9999, 3 );
 add_filter('gform_pre_render_16', 'edd_gf_extensions_dropdown', 9999, 3 );
 
 /**
- * Email notification to admin about Gravity Forms Help Scout API authentication problem and create Help Scout conversation
+ * Send a pushover notification when the Gravity Forms Help Scout addon is not authenticated.
  *
  */
-function edd_helpscout_authentication_mail( $feed, $entry, $form, $addon ) {
-
+function edd_helpscout_authentication_notification( $feed, $entry, $form, $addon ) {
 	// Only run this code if there is a problem with Help Scout API authentication.
-	if ( ! $addon->is_authenticated() ) {
+	if ( ! $addon->is_authenticated() && function_exists( 'ckpn_send_notification' ) ) {
 
-		// Create message and headers.
-		$message = sprintf(
-			'Unable to create conversation %s because API was not initialized. %s',
-			'<a href="' . admin_url( 'admin.php?page=gf_entries&view=entry&id=' . absint( $form['id'] ) . '&lid=' . esc_attr( $entry['id'] ) . '">' . $entry['id'] ) . '</a>',
-			'<a href="' . $addon->get_redirect_url() . '">Click here to authenticate with Help Scout.</a>'
+		$users = ckpn_get_users_with_keys();
+
+		$options = ckpn_get_options();
+
+		// Add the default admin key from settings.
+		$user_keys = array( $options['api_key'] );
+
+		$alert_capability = apply_filters( 'ckpn_sales_alert_capability', 'manage_options' );
+
+		// Find the users who can view_shop_reports and have a user key.
+		foreach ( $users as $user_id => $user_key ) {
+			if ( ! user_can( $user_id, $alert_capability ) ) {
+				continue;
+			}
+
+			$user_keys[] = $user_key;
+		}
+
+
+		$args = array(
+			'priority'  => 1,
+			'title'     => 'Gravity Forms Error',
+			'message'   => 'There was an error sending a Support request to Help Scout. Please reconnect the API.',
+			'token'     => ckpn_get_application_key_by_id(),
+			'url'       => $addon->get_redirect_url(),
+			'url_title' => 'Reconnect Help Scout',
+			'sound'     => 'gamelan',
 		);
-		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 
-		// Send the notification.
-		wp_mail(
-			array(
-				'chris@sandhillsdev.com',
-				'keri@sandhillsdev.com',
-			),
-			sprintf( '%s - Help Scout API problem', get_bloginfo( 'name' ) ),
-			$message,
-			$headers
-		);
+		foreach ( $user_keys as $user ) {
+			$args['user'] = $user;
+			ckpn_send_notification( $args );
+		}
 
-		// Send Help Scout notification to create conversation.
-		GFAPI::send_notifications( $form, $entry, 'help_scout_conversation_error' );
 	}
 }
-add_action( 'gform_gravityformshelpscout_post_process_feed', 'edd_helpscout_authentication_mail', 10, 4 );
-
-
-/**
- * Add notification events
- *
- */
-function edd_gf_notification_events( $notification_events ) {
-	$notification_events['help_scout_conversation_error'] = 'Help Scout Converation Error';
-
-	return $notification_events;
-}
-add_filter( 'gform_notification_events', 'edd_gf_notification_events' );
-
+add_action( 'gform_gravityformshelpscout_post_process_feed', 'edd_helpscout_authentication_notification', 10, 4 );
 
 /**
  * Prevent "45 Days" memberships from auto renewing.
