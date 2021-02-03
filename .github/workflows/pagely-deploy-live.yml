@@ -1,0 +1,20 @@
+name: "pagely-deploy-live"
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    name: Deploy to Easy Digital Downloads - Live
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Run deploy
+        uses: pagely/action-deploy@v1
+        with:
+          PAGELY_DEPLOY_DEST: "/httpdocs/wp-content/plugins/custom-functions"
+          PAGELY_INTEGRATION_SECRET: ${{secrets.PAGELY_INTEGRATION_SECRET}}
+          PAGELY_INTEGRATION_ID: "ytG7AuZaCAgT7z2vBzDaeD"
+          PAGELY_APP_ID: "8333"
+          PAGELY_WORKING_DIR: ${{github.workspace}}
