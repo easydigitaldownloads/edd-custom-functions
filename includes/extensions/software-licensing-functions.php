@@ -230,6 +230,11 @@ function eddwp_account_for_download_name_change( $args ) {
 		if ( in_array( strtolower( $args['item_name'] ), array( 'edd dropbox file store', 'edd+dropbox+file+store' ) ) ) {
 			$args['item_name'] = 'Dropbox';
 		}
+
+		if ( in_array( strtolower( $args['item_name'] ), array( 'stripe payment gateway', 'stripe+payment+gateway' ) ) ) {
+			$args['item_name'] = 'Stripe Pro Payment Gateway';
+		}
+
 	}
 
 	return $args;
@@ -248,6 +253,10 @@ function eddwp_account_for_download_name_change_on_get_version( $download_id, $n
 		return 284975;
 	}
 
+	if ( in_array( strtolower( $name ), array( 'stripe payment gateway', 'stripe+payment+gateway' ) ) ) {
+		return 167;
+	}
+
 	return $download_id;
 }
 add_filter( 'edd_sl_get_download_id_by_name', 'eddwp_account_for_download_name_change_on_get_version', 10, 2 );
@@ -259,6 +268,10 @@ function eddwp_account_for_download_name_change_on_check_item_name( $match, $dow
 	}
 
 	if ( in_array( strtolower( $item_name ), array( 'edd dropbox file store', 'edd+dropbox+file+store' ) ) && 284975 == $download_id ) {
+		$match = true;
+	}
+
+	if ( in_array( strtolower( $item_name ), array( 'stripe payment gateway', 'stripe+payment+gateway' ) ) && 167 == $download_id ) {
 		$match = true;
 	}
 
