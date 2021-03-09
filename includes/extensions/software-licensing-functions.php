@@ -216,9 +216,15 @@ add_filter( 'edd_sl_is_local_url', 'eddwp_whitelist_sl_domains', 10, 2 );
  * Fix any file download names changing.
  */
 function eddwp_account_for_download_name_change( $args ) {
+
 	if ( ! empty( $args['item_name'] ) ) {
+
 		if ( strtolower( $args['item_name'] ) === 'mail chimp' ) {
 			$args['item_name'] = 'Mailchimp';
+		}
+
+		if ( strtolower( $args['item_name'] ) === 'wysija' ) {
+			$args['item_name'] = 'MailPoet';
 		}
 
 		if ( in_array( strtolower( $args['item_name'] ), array( 'edd dropbox file store', 'edd+dropbox+file+store' ) ) ) {
@@ -230,7 +236,6 @@ function eddwp_account_for_download_name_change( $args ) {
 		}
 
 	}
-
 
 	return $args;
 }
