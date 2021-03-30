@@ -277,14 +277,24 @@ function eddwp_all_access_customer_card( $customer ) {
 }
 add_action( 'edd_after_customer_edit_link', 'eddwp_all_access_customer_card', 10, 1 );
 
+/**
+ * Show if the customer has an active All Access Pass on the order record
+ *
+ * @param int $payment_id
+ */
 function eddwp_all_access_payment_details( $payment_id ) {
 
-	if ( ! function_exists( 'edd_all_access_check' ) ) {
+	if ( ! function_exists( 'edd_all_access_check' ) || empty( $payment_id ) ) {
 		return;
 	}
 
-	$bundle_id      = eddwp_get_aap_id();
-	$customer_id    = edd_get_payment_customer_id( $payment_id );
+	$bundle_id   = eddwp_get_aap_id();
+	$customer_id = edd_get_payment_customer_id( $payment_id );
+
+	if ( empty( $customer_id ) ) {
+		return;
+	}
+
 	$has_all_access = edd_all_access_check( array( 'customer_id' => $customer_id, 'download_id' => $bundle_id ) );
 
 	if ( $has_all_access['success'] ) {
