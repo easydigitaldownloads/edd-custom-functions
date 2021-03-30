@@ -41,12 +41,13 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 	);
 
 	// Set some default values
-	$discount      = 0.00;
-	$now           = current_time( 'timestamp' );
-	$aap_purchases = array();
+	$discount       = 0.00;
+	$now            = current_time( 'timestamp' );
+	$aap_purchases  = array();
+	$valid_statuses = array( 'complete', 'publish', 'edd_subscription' );
 
 	// Look through the customer history for purchases worthy of a discount
-	foreach( $customer->get_payments( array( 'publish', 'edd_subscription' ) ) as $payment ) {
+	foreach( $customer->get_payments( $valid_statuses ) as $payment ) {
 
 		// Skip free payments
 		if( ! $payment->total > 0 ) {
@@ -59,7 +60,7 @@ function pw_edd_all_access_upgrade_path( $paths, $download_id ) {
 		}
 
 		// Skip anything that is not a renewal or not complete
-		if( 'publish' !== $payment->status && 'edd_subscription' !== $payment->status ) {
+		if ( ! in_array( $payment->status, $valid_statuses ) ) {
 			continue;
 		}
 
