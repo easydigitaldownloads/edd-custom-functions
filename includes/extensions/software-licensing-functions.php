@@ -297,9 +297,20 @@ function eddwp_edd_sl_license_at_limit( $ret = false, $license_id = 0, $limit = 
 		return $ret;
 	}
 
-	$purchase_id   = $license->payment_id;
+	$purchase_id = $license->payment_id;
+	if ( function_exists( 'edd_get_order' ) ) {
+		// EDD 3.0+
+		$order = edd_get_order( $purchase_id );
+		if ( empty( $order ) ) {
+			return $ret;
+		}
+		$purchase_date = $order->date_created;
+	} else {
+		// EDD 2.x
+		$purchase_date = get_post_field( 'post_date', $purchase_id );
+	}
 	try {
-		$purchase_date = new DateTime( get_post_field( 'post_date', $purchase_id ) );
+		$purchase_date = new DateTime( $purchase_date );
 		$limit_date    = new DateTime( '2013-01-01' );
 
 		if ( $purchase_date < $limit_date ) {
