@@ -44,6 +44,12 @@ class EDD_Custom_Functions {
 
 
 		/**
+		 * Settings
+		 */
+		include( EDD_CUSTOM_FUNCTIONS . 'settings/main.php' );
+
+
+		/**
 		 * Include custom post type functions
 		 */
 		include( EDD_CUSTOM_FUNCTIONS . 'post-types/post-types.php' );
