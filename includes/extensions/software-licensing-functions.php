@@ -20,6 +20,10 @@ class EDD_Custom_SL_Functionality {
 	private function filters() {
 		add_filter( 'edd_sl_license_response', array( self::$instance, 'filter_get_version_response' ), 10, 3 );
 		add_filter( 'edd_sl_download_upgrade_file_key', array( self::$instance, 'filter_file_key' ), 10, 2 );
+
+		// Add pass_id to license responses.
+		add_filter( 'edd_remote_license_activation_response', array( self::$instance, 'add_pass_id' ), 11, 3 );
+		add_filter( 'edd_remote_license_check_response', array( self::$instance, 'add_pass_id' ), 11, 3 );
 	}
 
 	public function filter_get_version_response( $response, $download, $download_beta ) {
@@ -149,12 +153,51 @@ class EDD_Custom_SL_Functionality {
 		return EDD_ROLLOUT_PRODUCTS[ $download_id ];
 	}
 
+	/**
+	 * Add pass_id (download_id) to Software Licensing response for checking and activating licenses.
+	 *
+	 * @param array $response   Array of the values to return in the API response.
+	 * @param array $args       Array of arguments passed into the license validation.
+	 * @param int   $license_id The ID of the license.
+	 *
+	 * @return array The response array.
+	 */
+	public function add_pass_id( $response, $args, $license_id ) {
+		// Default to a null pass_id.
+		$pass_id = null;
+
+		if ( ! empty( $license_id ) ) {
+			$license     = new EDD_SL_License( $license_id );
+			$download_id = absint( $license->download_id );
+
+			if ( ! empty( $download_id ) ) {
+				$pass_ids = array(
+					eddwp_get_pp_id(),
+					eddwp_get_ep_id(),
+					eddwp_get_propass_id(),
+					eddwp_get_aap_id(),
+					eddwp_get_laap_id(),
+				);
+
+				if ( in_array( $download_id, $pass_ids, true ) ) {
+					$pass_id_key = array_search( $download_id, $pass_ids, true );
+					$pass_id     = $pass_ids[ $pass_id_key ];
+				}
+			}
+		}
+
+		// Add the pass id to the response array.
+		$response['pass_id'] = $pass_id;
+
+		return $response;
+	}
+
 }
 
 function eddwp_custom_sl_functionality() {
 	return EDD_Custom_SL_Functionality::instance();
 }
-add_action( 'plugins_loaded', 'eddwp_custom_sl_functionality' );
+add_action( 'plugins_loaded', 'eddwp_custom_sl_functionality', 99 );
 
 
 /*
