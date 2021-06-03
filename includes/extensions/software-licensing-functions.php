@@ -168,20 +168,22 @@ class EDD_Custom_SL_Functionality {
 
 		if ( ! empty( $license_id ) ) {
 			$license     = new EDD_SL_License( $license_id );
-			$download_id = absint( $license->download_id );
+			if ( ! empty( $license->ID ) ) {
+				$download_id = absint( $license->download_id );
 
-			if ( ! empty( $download_id ) ) {
-				$pass_ids = array(
-					eddwp_get_pp_id(),
-					eddwp_get_ep_id(),
-					eddwp_get_propass_id(),
-					eddwp_get_aap_id(),
-					eddwp_get_laap_id(),
-				);
+				if ( ! empty( $download_id ) ) {
+					$pass_ids = array(
+						eddwp_get_pp_id(),
+						eddwp_get_ep_id(),
+						eddwp_get_propass_id(),
+						eddwp_get_aap_id(),
+						eddwp_get_laap_id(),
+					);
 
-				if ( in_array( $download_id, $pass_ids, true ) ) {
-					$pass_id_key = array_search( $download_id, $pass_ids, true );
-					$pass_id     = $pass_ids[ $pass_id_key ];
+					if ( in_array( $download_id, $pass_ids, true ) ) {
+						$pass_id_key = array_search( $download_id, $pass_ids, true );
+						$pass_id     = $pass_ids[ $pass_id_key ];
+					}
 				}
 			}
 		}
