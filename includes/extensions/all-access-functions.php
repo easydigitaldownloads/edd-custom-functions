@@ -1,15 +1,43 @@
 <?php
-/*
+/**
  * all-access-functions.php
  */
 
-// Get the download ID of the All Access Pass
+ /**
+  * Return the post_id (download_id) of the Personal pass.
+  */
+function eddwp_get_pp_id() {
+	$pp = get_page_by_path( 'personal-pass', OBJECT, 'download' );
+	return $pp->ID;
+}
+
+ /**
+  * Return the post_id (download_id) of the Extended pass.
+  */
+function eddwp_get_ep_id() {
+	$ep = get_page_by_path( 'extended-pass', OBJECT, 'download' );
+	return $ep->ID;
+}
+
+ /**
+  * Return the post_id (download_id) of the Professional pass.
+  */
+function eddwp_get_propass_id() {
+	$propass = get_page_by_path( 'professional-pass', OBJECT, 'download' );
+	return $propass->ID;
+}
+
+ /**
+  * Return the post_id (download_id) of the All Access Pass.
+  */
 function eddwp_get_aap_id() {
 	$aap = get_page_by_path( 'all-access-pass', OBJECT, 'download' );
 	return $aap->ID;
 }
 
-// Get the download ID of the Lifetime All Access Pass
+ /**
+  * Return the post_id (download_id) of the Lifetime All Access Pass.
+  */
 function eddwp_get_laap_id() {
 	$laap = get_page_by_path( 'lifetime-all-access-pass', OBJECT, 'download' );
 	return $laap->ID;
