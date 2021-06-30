@@ -18,3 +18,21 @@ jobs:
           PAGELY_INTEGRATION_ID: "ytG7AuZaCAgT7z2vBzDaeD"
           PAGELY_APP_ID: "8333"
           PAGELY_WORKING_DIR: ${{github.workspace}}
+      - name: Notify slack success
+        if: success()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: ops
+          status: SUCCESS 
+          color: good
+      - name: Notify slack fail
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: ops
+          status: FAILED
+          color: danger
